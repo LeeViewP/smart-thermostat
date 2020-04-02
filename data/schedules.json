@@ -1,0 +1,335 @@
+[
+    {
+        "id": "cool",
+        "schedule": {
+            "0": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 480,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "1": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "2": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "3": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "4": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "5": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "6": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 480,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ]
+        }
+    },
+    {
+        "id": "heat",
+        "schedule": {
+            "0": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 480,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "1": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "2": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "3": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "4": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "5": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 330,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 480,
+                    "temperature": 20
+                },
+                {
+                    "start": 930,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ],
+            "6": [
+                {
+                    "start": 0,
+                    "temperature": 20
+                },
+                {
+                    "start": 480,
+                    "temperature": 22.8
+                },
+                {
+                    "start": 1380,
+                    "temperature": 20
+                }
+            ]
+        }
+    },
+    {
+        "id": "away",
+        "schedule": {
+            "0": [
+                {
+                    "start": 0,
+                    "target_temperature": 18
+                }
+            ],
+            "1": [
+                {
+                    "start": 0,
+                    "target_temperature": 18
+                }
+            ],
+            "2": [
+                {
+                    "start": 0,
+                    "target_temperature": 18
+                }
+            ],
+            "3": [
+                {
+                    "start": 0,
+                    "target_temperature": 18
+                }
+            ],
+            "4": [
+                {
+                    "start": 0,
+                    "target_temperature": 18
+                }
+            ],
+            "5": [
+                {
+                    "start": 0,
+                    "target_temperature": 18
+                }
+            ],
+            "6": [
+                {
+                    "start": 0,
+                    "target_temperature": 18
+                }
+            ]
+        }
+    }
+]

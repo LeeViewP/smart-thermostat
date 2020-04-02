@@ -1,0 +1,58 @@
+{
+    "temperature": {
+        "unit": "C",
+        "threshold": 0.3
+    },
+    "humidity": {
+        "unit": "%"
+    },
+    "thermostat": {
+        "mode": 0,
+        "zonecontrol": [
+            {
+                "id": "4BFD0A44-1FE9-4195-B96D-952F5E49CEB6",
+                "zoneid": "35C1EC41-6462-47A2-8ED6-14F488831D5F",
+                "mode": 0,
+                "schedule": "heat",
+                "offset": {
+                    "temperature": 0,
+                    "humidity": 0
+                },
+                "isenabled": true
+            },
+            {
+                "id": "DF023195-6735-4948-BE2F-3F6DBEEAE428",
+                "zoneid": "D7249F71-5BD1-48E2-B574-C77CD4E5B0A2",
+                "mode": 0,
+                "schedule": "heat",
+                "offset": {
+                    "temperature": -0.4,
+                    "humidity": 0
+                },
+                "isenabled": true
+            },
+            {
+                "id": "99C20F3D-7FEC-4C44-92F9-E1A60F57DC3D",
+                "zoneid": "35C1EC41-6462-47A2-8ED6-14F488831D5F",
+                "mode": 1,
+                "schedule": "cool",
+                "offset": {
+                    "temperature": 0,
+                    "humidity": 0
+                },
+                "isenabled": true
+            },
+            {
+                "id": "D48779D3-8C71-4CAE-89E8-1DE0E696C611",
+                "zoneid": "D7249F71-5BD1-48E2-B574-C77CD4E5B0A2",
+                "mode": 1,
+                "schedule": "heat",
+                "offset": {
+                    "temperature": 0,
+                    "humidity": 0
+                },
+                "isenabled": true
+            }
+        ]
+    }
+}
