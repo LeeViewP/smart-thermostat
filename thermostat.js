@@ -7,6 +7,7 @@ const jsonFile = require("./helpers");
 const Shelly1 = require('./shelly1');
 
 const app = express();
+const datafolderPath = './data/db/'
 // Parse incoming requests data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -57,134 +58,10 @@ promises.push(Promise.resolve(jsonFile.readJSONFile("./data/zones.json")).then(r
 
 Promise.all(promises).then(response => {
     processActiveZones();
-    setInterval(processActiveZones, settings.timeProcessors.processActiveZones);
+    // setInterval(processActiveZones, settings.timeProcessors.processActiveZones);
     setInterval(processTemperature, settings.timeProcessors.processTemperature);
 }
 )
-// activeZones = getActiveZonesNow();
-// jsonFile.readJSONFile("./data/settings.json").then(result => {
-//     settings = result;
-//     jsonFile.readJSONFile("./data/schedules.json").then( schedulesResult=>{
-//         schedules = schedulesResult;
-//     }
-
-//     )
-//     activeZones = getActiveZonesNow();
-// });
-// var settings = {
-//     "temperature": {
-//         "unit": "C",
-//         "threshold": 0.3
-//     },
-//     "humidity": {
-//         "unit": "%"
-//     },
-//     "thermostat": {
-//         "mode": 0, // 0-HEAT, 1-COOL, 2-AUTO
-//         "zonecontrol": [
-//             {
-//                 "zoneid": "1",
-//                 "mode": 0,
-//                 "schedule": "heat",
-//                 "offset": {
-//                     "temperature": 0.00,
-//                     "humidity": 0.00
-//                 }
-//             },
-//             {
-//                 "zoneid": "2",
-//                 "mode": 0,
-//                 "schedule": "heat",
-//                 "offset": {
-//                     "temperature": -0.40,
-//                     "humidity": 0.00
-//                 }
-//             },
-//             {
-//                 "zoneid": "1",
-//                 "mode": 1,
-//                 "schedule": "cool",
-//                 "offset": {
-//                     "temperature": 0.00,
-//                     "humidity": 0.00
-//                 }
-//             },
-//             {
-//                 "zoneid": "2",
-//                 "mode": 1,
-//                 "schedule": "heat",
-//                 "offset": {
-//                     "temperature": 0.00,
-//                     "humidity": 0.00
-//                 }
-//             }
-//         ]
-//     }
-// }
-// var relays = [
-//     new Shelly1("41", "192.168.1.41"),
-//     new Shelly1("42", "192.168.1.42"),
-// ]
-
-// var sensors = [{ "id": "1", "temperature": { "value": 21.5, "unit": "C", }, "humidity": { "value": 50.14, "unit": "%" }, "updated": 1508087210577 }, { "id": "2", "temperature": { "value": 20.5, "unit": "C", }, "humidity": { "value": 50.14, "unit": "%" }, "updated": 1508087210577 }]
-
-// var schedules = [
-//     {
-//         "id": "cool",
-//         "schedule": {
-//             "0": [{ "start": 0, "temperature": 20.0 }, { "start": 480, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "1": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "2": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "3": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "4": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "5": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "6": [{ "start": 0, "temperature": 20.0 }, { "start": 480, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }]
-//         }
-//     },
-//     {
-//         "id": "heat",
-//         "schedule": {
-//             "0": [{ "start": 0, "temperature": 20.0 }, { "start": 480, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "1": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "2": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "3": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "4": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "5": [{ "start": 0, "temperature": 20.0 }, { "start": 330, "temperature": 22.8 }, { "start": 480, "temperature": 20.0 }, { "start": 930, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }],
-//             "6": [{ "start": 0, "temperature": 20.0 }, { "start": 480, "temperature": 22.8 }, { "start": 1380, "temperature": 20.0 }]
-//         }
-//     },
-//     {
-//         "id": "away",
-//         "schedule": {
-//             "0": [{ "start": 0, "target_temperature": 18.0 }],
-//             "1": [{ "start": 0, "target_temperature": 18.0 }],
-//             "2": [{ "start": 0, "target_temperature": 18.0 }],
-//             "3": [{ "start": 0, "target_temperature": 18.0 }],
-//             "4": [{ "start": 0, "target_temperature": 18.0 }],
-//             "5": [{ "start": 0, "target_temperature": 18.0 }],
-//             "6": [{ "start": 0, "target_temperature": 18.0 }],
-//         }
-//     }
-// ]
-
-// var zones = [
-//     {
-//         "id": "1",
-//         "name": "zone 1",
-//         "sensor": { "id": "1" },
-//         "relays": [{ "id": "41" }],
-//     },
-//     {
-//         "id": "2",
-//         "name": "zone 2",
-//         "sensor": { "id": "2" },
-//         "relays": [{ "id": "41" }],
-//     },
-// ]
-
-
-
-// getActiveZonesNow().then(result => activeZones = result);
 
 app.post(['/relays', '/sensors', '/schedules'], (req, res, next) => {
     if (!req.body.id) return res.status(406).end();
@@ -285,11 +162,20 @@ app.post('/sensors', (req, res) => {
     res.status(201).end()
 });
 
+
 app.get('/sensors/:id', (req, res) => {
     var foundSensor = sensors.filter(s => s.id === req.params.id)[0];
     return responseReturn(req, res, foundSensor);
 });
 
+app.delete('/sensors/:id', (req, res) => {
+    var foundSensor = sensors.filter(s => s.id === req.params.id)[0];
+    if (foundSensor) sensors.splice(sensors.indexOf(foundSensor), 1);
+    jsonFile.writeJSONFile(datafolderPath + 'sensors.json', sensors);
+    res.status(204).end()
+
+    return responseReturn(req, res, foundSensor);
+});
 
 app.get('/schedules', (req, res) => {
     res.status(200).send(schedules);
@@ -310,27 +196,7 @@ function responseReturn(req, res, item) {
     return res.status(item ? 200 : 404).send(item ? item : `Sorry, cant find that id: ${req.params.id}`);
 }
 
-function getActiveZonesNow() {
-    var date = new Date();
-    const currentTime = date.getHours() * 60 + date.getMinutes();
 
-    return settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode && z.isenabled === true).map(activeZone => {
-        var activeSchedule = schedules.find(s => s.id === activeZone.schedule).schedule;
-        var intervals = activeSchedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
-        const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-        return ({
-            zone: zones.map(convertZoneFactory(activeZone.offset)).find(z => z.id === activeZone.zoneid),
-            // schedule: schedules.find(s => s.id === activeZone.schedule).schedule,
-            mode: activeZone.mode,
-            interval: interval,
-            temperature: activeZone.temperature || settings.temperature
-            // offset: activeZone.offset,
-
-        })
-    });
-
-
-}
 function buildActiveZones() {
     return settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode && z.isenabled === true).map(activeZone => buildActiveZone(activeZone));
 }
@@ -339,24 +205,27 @@ function buildActiveZone(activeZone) {
     const currentTime = date.getHours() * 60 + date.getMinutes();
     var activeSchedule = schedules.find(s => s.id === activeZone.schedule).schedule;
     var intervals = activeSchedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
-    const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
+    // const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
+    const interval = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
+    setInterval(intervalPooling, (interval.to - currentTime) * 60 * 1000, activeZone);
+
     return ({
         zone: zones.map(convertZoneFactory(activeZone.offset)).find(z => z.id === activeZone.zoneid),
-        // schedule: schedules.find(s => s.id === activeZone.schedule).schedule,
         mode: activeZone.mode,
-        interval: interval,
+        interval: interval.interval,
         temperature: activeZone.temperature || settings.temperature
-        // offset: activeZone.offset,
-
     })
 
 }
 function processActiveZones() {
-    // activeZones = getActiveZonesNow();
     activeZones = buildActiveZones();
 }
-function startIntervalPooling(activeZone){
 
+function intervalPooling(activeZone) {
+    console.log('interval pooling', activeZone);
+    var foundZone = activeZones.filter(z => z.zone.id === activeZone.zoneid)[0];
+    if (foundZone)
+        activeZones.splice(activeZones.indexOf(foundZone), 1, buildActiveZone(activeZone));
 }
 function processTemperature() {
 
@@ -379,80 +248,6 @@ function processTemperature() {
     });
     tOff.filter(r => tOn.indexOf(r) < 0).filter(r => r.isOn).forEach(t => t.turnOff());
     tOn.filter(r => !r.isOn).forEach(t => t.turnOn());
-
-
-    // Detect hourly interval
-    // var intervals = activeZone.schedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
-    // const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-    // settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode).map(activeZone => {
-    //     var activeSchedule = schedules.find(s => s.id === activeZone.schedule).schedule;
-    //     var intervals = activeSchedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
-    //     const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-    //     return ({
-    //     zone: zones.map(convertZoneFactory(activeZone.offset)).find(z => z.id === activeZone.zoneid),
-    //     // schedule: schedules.find(s => s.id === activeZone.schedule).schedule,
-    //     mode: activeZone.mode,
-    //     interval: interval
-    //     // offset: activeZone.offset,
-
-    // })});
-
-    // const fullZones = zones.map(zone => ({
-    //     id: zone.id,
-    //     name: zone.name,
-    //     sensor: sensors.find(s => s.id === zone.sensor.id),
-    //     relays: zone.relays.map(rs => relays.find(r => r.id === rs.id)),
-    // }));
-    // const convertZoneFactory = (offset) => (zone) => ({
-    //     id: zone.id,
-    //     name: zone.name,
-    //     sensor: sensors.map(sn => { let sensor = { ...sn }; sensor.temperature.value += offset.temperature; sensor.humidity.value += offset.humidity; return sensor; }).find(s => s.id === zone.sensor.id),
-    //     relays: zone.relays.map(rs => relays.find(r => r.id === rs.id)),
-    // })
-    // const activeZones = settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode).map(activeZone => ({
-    //     zone: zones.map(convertZoneFactory(activeZone.offset)).find(z => z.id === activeZone.zoneid),
-    //     schedule: schedules.find(s => s.id === activeZone.schedule),
-    //     mode: activeZone.mode,
-    //     offset: activeZone.offset,
-
-    // }));
-    // const activeSchedule = schedules.find(s => s.id == settings.thermostat.activeSchedule);
-    // var date = new Date();
-    // const currentTime = date.getHours() * 60 + date.getMinutes();
-    // var intervals = activeSchedule.schedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
-    // const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-    // const controls = settings
-    //     .thermostat
-    //     .controls
-    //     .filter(c => c.mode == settings.thermostat.mode)
-    //     .map(control => ({
-    //         sensor: sensors.find(s => s.id === control.sensor.id),
-    //         relays: control.relays.map(rs => relays.find(r => r.id === rs.id)),
-    //         ismain: control.ismain,
-    //         mode: control.mode
-    //     }));
-    // var targetLow = interval.temperature - settings.temperature.threshold
-    // var targetHigh = interval.temperature + settings.temperature.threshold
-    // var tOn = [];
-    // var tOff = [];
-    // controls.forEach(control => {
-    //     //HEAT MODE
-    //     if (control.mode === 0)
-    //         if (control.sensor.temperature.value > targetHigh) control.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
-    //         else control.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
-
-    //     //COOL MODE
-    //     if (control.mode === 1)
-    //         if (control.sensor.temperature.value < targetLow) control.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); })
-    //         else control.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay); });
-    // });
-
-    // tOff.filter(r => tOn.indexOf(r) < 0).filter(r => r.ison).forEach(t => callRelay(t.OFF_url));
-    // tOn.filter(r => !r.ison).forEach(t => callRelay(t.ON_url));
-
-
-    // const currentTemps = sensors.map(sensor => sensor.temperature.value);
-    // const shouldStartCentrala = currentTemps.some(currentTemp => currentTemp < (targetTemperature - thresholdTemperature));
 }
 
 

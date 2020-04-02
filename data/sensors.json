@@ -22,5 +22,17 @@
             "unit": "%"
         },
         "updated": 1508087210577
+    },
+    {
+        "id": "3",
+        "temperature": {
+            "value": 20.5,
+            "unit": "C"
+        },
+        "humidity": {
+            "value": 50.14,
+            "unit": "%"
+        },
+        "updated": 1508087210577
     }
 ]
