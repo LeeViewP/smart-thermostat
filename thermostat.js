@@ -14,7 +14,7 @@ const datafolderPath = './data/'
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const port = 8081;
+// const port = 8081;
 
 var status = {
     "temperature": {
