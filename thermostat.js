@@ -57,8 +57,8 @@ promises.push(Promise.resolve(jsonFile.readJSONFile("./data/zones.json")).then(r
 
 Promise.all(promises).then(response => {
     processActiveZones();
-    setInterval(processActiveZones, 5000);
-    setInterval(processTemperature, 3000);
+    setInterval(processActiveZones, settings.timeProcessors.processActiveZones);
+    setInterval(processTemperature, settings.timeProcessors.processTemperature);
 }
 )
 // activeZones = getActiveZonesNow();

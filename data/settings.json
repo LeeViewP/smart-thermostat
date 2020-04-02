@@ -6,6 +6,10 @@
     "humidity": {
         "unit": "%"
     },
+    "timeProcessors":{
+        "processActiveZones": 5000,
+        "processTemperature": 3000
+    },
     "thermostat": {
         "mode": 0,
         "zonecontrol": [
