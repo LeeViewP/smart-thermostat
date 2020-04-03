@@ -6,9 +6,11 @@
     "humidity": {
         "unit": "%"
     },
-    "timeProcessors":{
-        "processActiveZones": 5000,
+    "timeProcessors": {
         "processTemperature": 3000
+    },
+    "server": {
+        "port": 8081
     },
     "thermostat": {
         "mode": 0,
