@@ -205,8 +205,7 @@ function buildActiveZone(controlZone) {
         temperature: controlZone.temperature || settings.temperature
     })
 }
-function startIntervalPooling(activeZone) {
-}
+
 function processActiveZonePooling(controlZone) {
     console.log('interval pooling', controlZone);
     var foundZone = activeZones.filter(z => z.zone.id === controlZone.zoneid)[0];
