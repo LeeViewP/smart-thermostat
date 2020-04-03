@@ -7,7 +7,10 @@ const helpers = require('./helpers');
 
 const Shelly1 = require('./shelly1');
 
+const { www } = require('./www');
+
 const app = express();
+app.use(www);
 const datafolderPath = './data/'
 
 // Parse incoming requests data
@@ -142,6 +145,15 @@ app.get('/sensors', (req, res) => {
 
 // app.use((res, req) => req.updated ))
 
+app.post('/manual', (req, res) => {
+    //TEST IMPLEMENTATION JUST TO CHECK IF IT WORKS IN FE
+    var activeZone = req.body;
+    console.log('received manual for active zone: ');
+    console.dir(activeZone);
+    // setTimeout(() => res.end(), 1234);
+    res.end();
+});
+
 app.post('/sensors', (req, res) => {
     var foundSensor = sensors.filter(s => s.id === req.body.id)[0];
     if (!foundSensor) sensors.push({ ...req.body });
@@ -153,13 +165,6 @@ app.post('/sensors', (req, res) => {
 app.get('/sensors/:id', (req, res) => {
     var foundSensor = sensors.filter(s => s.id === req.params.id)[0];
     return hlpers.responseReturn(req, res, foundSensor);
-});
-
-app.delete('/sensors/:id', (req, res) => {
-    var foundSensor = sensors.filter(s => s.id === req.params.id)[0];
-    if (foundSensor) sensors.splice(sensors.indexOf(foundSensor), 1);
-    jsonFile.writeJSONFile(`${datafolderPath}/sensors.json`, sensors);
-    res.status(204).end()
 });
 
 app.get('/schedules', (req, res) => {
@@ -178,6 +183,7 @@ app.get('/activezones', (req, res) => { res.status(200).send(activeZones); });
 // app.listen(port, () => {
 //     console.log(`server is runing on port:${port}`)
 // })
+
 
 function buildActiveZones() {
     return settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode && z.isenabled === true).map(controlZone => buildActiveZone(controlZone));
@@ -199,6 +205,7 @@ function buildActiveZone(controlZone) {
         temperature: controlZone.temperature || settings.temperature
     })
 }
+function startIntervalPooling(activeZone){
 
 function processActiveZonePooling(controlZone) {
     console.log('interval pooling', controlZone);
@@ -227,11 +234,4 @@ function processTemperature() {
     });
     tOff.filter(r => tOn.indexOf(r) < 0).filter(r => r.isOn).forEach(t => t.turnOff());
     tOn.filter(r => !r.isOn).forEach(t => t.turnOn());
-}
-
-Object.prototype.deepCopy = function deepCopy() {
-    if (Array.isArray(this)) this.map(item => item.deepCopy());
-
-    const clone = { ...this };
-    const keysToBeCopied = Object.prototype.keys
 }
