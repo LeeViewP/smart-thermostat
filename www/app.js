@@ -23,7 +23,7 @@
 			let hh = Math.floor(min / 60);
 			let mm = min % 60;
 			const hours = hh < 10 ?  + hh : hh;
-			const minutes = mm < 60 ? '0' + mm : mm;
+			const minutes = mm < 10 ? '0' + mm : mm;
 			return hours + ':' + minutes;
 		}
 	}])
@@ -97,7 +97,7 @@
 								 class="md-hue-2" 
 								 data-ng-class="{'md-primary': $ctrl.sensorShouldBeActive }"></md-icon> 
 						<div flex="90">
-							<span> {{::$ctrl.schedule.start | thMinutesToHumanisedString}}</span>
+							<span> {{::$ctrl.schedule.start | thMinutesToHumanisedString}} -  {{::$ctrl.schedule.end | thMinutesToHumanisedString}}</span>
 						</div>
 					</div>
 				</md-card-title-text>
@@ -116,12 +116,12 @@
 						{{::$ctrl.sensor.temperature.value}}
 						{{::$ctrl.sensor.temperature.unit}}
 					</div>
-					<div flex="40"  layout="row" layout-align="end center" data-ng-click="$ctrl.setManualTemperature($event)">
+					<div flex="40"  layout="row" layout-align="end center" class="md-title" data-ng-click="$ctrl.setManualTemperature($event)">
 						{{$ctrl.schedule.temperature}} {{::$ctrl.temperature.unit}}
 					</div>
 					<div flex="10"  layout="row">
 					<md-icon md-svg-icon="{{$ctrl.modeStatusIcon[$ctrl.mode]}}" 
-							 class="md-hue-2 s34" 
+							 class="md-hue-2 s20" 
 							 data-ng-class="{'md-warn': $ctrl.sensorShouldBeActive() }"
 							 data-ng-style="{'opacity': $ctrl.sensorShouldBeActive() ? 1 : 0.2}"></md-icon> 
 					</div>

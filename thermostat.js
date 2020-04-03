@@ -198,12 +198,12 @@ function buildActiveZone(controlZone) {
     const interval = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
     setInterval(processActiveZonePooling, (interval.to - currentTime) * 60 * 1000, controlZone);
 
-    return ({
+    return {
         zone: zones.map(convertZoneFactory(controlZone.offset)).find(z => z.id === controlZone.zoneid),
         mode: controlZone.mode,
-        interval: interval.interval,
+        interval: {...interval.interval, end: interval.to},
         temperature: controlZone.temperature || settings.temperature
-    })
+    }
 }
 
 function processActiveZonePooling(controlZone) {
