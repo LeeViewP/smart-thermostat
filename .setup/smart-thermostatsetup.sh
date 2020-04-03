@@ -52,6 +52,8 @@ else
   sudo apt-get -y install nodejs;
 fi
 
+echo -e "${CYAN}************* STEP: Installing git *************${NC}"
+sudo apt-get -y install git
 
 echo -e "${CYAN}************* STEP: Setup Smart Thermostat app & dependencies *************${NC}"
 sudo mkdir -p $APPSRVDIR    #main dir where smart-thermostat app lives

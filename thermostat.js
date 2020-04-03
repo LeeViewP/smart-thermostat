@@ -227,7 +227,7 @@ function processTemperature() {
         //Cool Mode
         if (activeZone.mode === 1) {
             var targetTemperature = activeZone.interval.temperature - settings.temperature.threshold;
-            if (activeZone.zone.sensor.temperature.value < targetLow) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); })
+            if (activeZone.zone.sensor.temperature.value < targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); })
             else activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay); });
         }
     });
