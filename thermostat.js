@@ -97,6 +97,11 @@ app.post('/settings', (req, res) => {
         settings.humidity = { ...settings.humidity, ...obj.humidity }
     if (obj.thermostat)
         settings.thermostat = { ...settings.thermostat, ...obj.thermostat }
+    if (obj.timeProcessors)
+        settings.timeProcessors = { ...settings.timeProcessors, ...obj.timeProcessors }
+    if (obj.server)
+        settings.server = { ...settings.server, ...obj.server }
+
     jsonFile.writeJSONFile(`${datafolderPath}/settings.json`, settings);
     res.status(200).send(settings);
 });
@@ -201,7 +206,7 @@ function buildActiveZone(controlZone) {
     return {
         zone: zones.map(convertZoneFactory(controlZone.offset)).find(z => z.id === controlZone.zoneid),
         mode: controlZone.mode,
-        interval: {...interval.interval, end: interval.to},
+        interval: { ...interval.interval, end: interval.to },
         temperature: controlZone.temperature || settings.temperature
     }
 }
