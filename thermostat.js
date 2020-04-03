@@ -185,7 +185,6 @@ app.get('/activezones', (req, res) => { res.status(200).send(activeZones); });
 // })
 
 
-}
 function buildActiveZones() {
     return settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode && z.isenabled === true).map(controlZone => buildActiveZone(controlZone));
 }
@@ -235,85 +234,4 @@ function processTemperature() {
     });
     tOff.filter(r => tOn.indexOf(r) < 0).filter(r => r.isOn).forEach(t => t.turnOff());
     tOn.filter(r => !r.isOn).forEach(t => t.turnOn());
-
-
-    // Detect hourly interval
-    // var intervals = activeZone.schedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
-    // const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-    // settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode).map(activeZone => {
-    //     var activeSchedule = schedules.find(s => s.id === activeZone.schedule).schedule;
-    //     var intervals = activeSchedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
-    //     const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-    //     return ({
-    //     zone: zones.map(convertZoneFactory(activeZone.offset)).find(z => z.id === activeZone.zoneid),
-    //     // schedule: schedules.find(s => s.id === activeZone.schedule).schedule,
-    //     mode: activeZone.mode,
-    //     interval: interval
-    //     // offset: activeZone.offset,
-
-    // })});
-
-    // const fullZones = zones.map(zone => ({
-    //     id: zone.id,
-    //     name: zone.name,
-    //     sensor: sensors.find(s => s.id === zone.sensor.id),
-    //     relays: zone.relays.map(rs => relays.find(r => r.id === rs.id)),
-    // }));
-    // const convertZoneFactory = (offset) => (zone) => ({
-    //     id: zone.id,
-    //     name: zone.name,
-    //     sensor: sensors.map(sn => { let sensor = { ...sn }; sensor.temperature.value += offset.temperature; sensor.humidity.value += offset.humidity; return sensor; }).find(s => s.id === zone.sensor.id),
-    //     relays: zone.relays.map(rs => relays.find(r => r.id === rs.id)),
-    // })
-    // const activeZones = settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode).map(activeZone => ({
-    //     zone: zones.map(convertZoneFactory(activeZone.offset)).find(z => z.id === activeZone.zoneid),
-    //     schedule: schedules.find(s => s.id === activeZone.schedule),
-    //     mode: activeZone.mode,
-    //     offset: activeZone.offset,
-
-    // }));
-    // const activeSchedule = schedules.find(s => s.id == settings.thermostat.activeSchedule);
-    // var date = new Date();
-    // const currentTime = date.getHours() * 60 + date.getMinutes();
-    // var intervals = activeSchedule.schedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
-    // const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-    // const controls = settings
-    //     .thermostat
-    //     .controls
-    //     .filter(c => c.mode == settings.thermostat.mode)
-    //     .map(control => ({
-    //         sensor: sensors.find(s => s.id === control.sensor.id),
-    //         relays: control.relays.map(rs => relays.find(r => r.id === rs.id)),
-    //         ismain: control.ismain,
-    //         mode: control.mode
-    //     }));
-    // var targetLow = interval.temperature - settings.temperature.threshold
-    // var targetHigh = interval.temperature + settings.temperature.threshold
-    // var tOn = [];
-    // var tOff = [];
-    // controls.forEach(control => {
-    //     //HEAT MODE
-    //     if (control.mode === 0)
-    //         if (control.sensor.temperature.value > targetHigh) control.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
-    //         else control.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
-
-    //     //COOL MODE
-    //     if (control.mode === 1)
-    //         if (control.sensor.temperature.value < targetLow) control.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); })
-    //         else control.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay); });
-    // });
-
-    // tOff.filter(r => tOn.indexOf(r) < 0).filter(r => r.ison).forEach(t => callRelay(t.OFF_url));
-    // tOn.filter(r => !r.ison).forEach(t => callRelay(t.ON_url));
-
-
-    // const currentTemps = sensors.map(sensor => sensor.temperature.value);
-    // const shouldStartCentrala = currentTemps.some(currentTemp => currentTemp < (targetTemperature - thresholdTemperature));
-}
-
-Object.prototype.deepCopy = function deepCopy() {
-    if (Array.isArray(this)) this.map(item => item.deepCopy());
-
-    const clone = { ...this };
-    const keysToBeCopied = Object.prototype.keys
 }
