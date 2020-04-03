@@ -110,5 +110,6 @@ sudo systemctl start smart-thermostat.service
 # echo -e "${RED}! Important : ${YLW}If not done already - configure your Pi core settings (timezone, expand SD etc) by running ${GRN}raspi-config${NC}"
 
 echo -e "${CYAN}************* ALL DONE! *************${NC}"
+sudo chown -R pi:pi $APPSRVDIR
 cd ~/
 exit 0
