@@ -49,12 +49,13 @@ const convertZoneFactory = (offset) => (zone) => ({
     relays: zone.relays.map(rs => relays.find(r => r._id === rs.id)),
 })
 
-var activeZones = {};
+// var activeZones = {};
 var settings = {};
 var schedules = {};
 var relays = [];
 var sensors = {};
 var zones = {};
+var overrides = {};
 
 Promise.all(
     [
@@ -62,22 +63,26 @@ Promise.all(
         Promise.resolve(jsonFile.readJSONFile(`${datafolderPath}/schedules.json`)),
         Promise.resolve(jsonFile.readJSONFile(`${datafolderPath}/relays.json`)),
         Promise.resolve(jsonFile.readJSONFile(`${datafolderPath}/sensors.json`)),
-        Promise.resolve(jsonFile.readJSONFile(`${datafolderPath}/zones.json`))
+        Promise.resolve(jsonFile.readJSONFile(`${datafolderPath}/zones.json`)),
+        Promise.resolve(jsonFile.readJSONFile(`${datafolderPath}/overrides.json`))
     ]).then(response => {
         settings = response[0];
         schedules = response[1];
         relays = response[2].map(relay => new Shelly1(relay._id, relay._ip));
         sensors = response[3];
         zones = response[4];
-        Promise.resolve(buildActiveZones())
-            .then(result => activeZones = result)
-            .then(() => {
-                setInterval(processTemperature, settings.timeProcessors.processTemperature);
-                app.listen(settings.server.port, () => {
-                    console.log(`server is runing on port:${settings.server.port}`)
-                })
-            });
+        overrides = response[5];
+        // Promise.resolve(buildActiveZones())
+        //     .then(result => activeZones = result)
+        //     .then(() => {
+        setInterval(processTemperature, settings.timeProcessors.processTemperature);
+        app.listen(settings.server.port, () => {
+            console.log(`server is runing on port:${settings.server.port}`)
+        })
+        processTemperature();
+        // });
     }).catch(error => console.log(`Error in promises ${error}`));
+
 
 app.post(['/relays', '/sensors', '/schedules'], (req, res, next) => {
     if (!req.body.id) return res.status(406).end();
@@ -86,7 +91,9 @@ app.post(['/relays', '/sensors', '/schedules'], (req, res, next) => {
 });
 
 app.get('/status', (req, res) => {
-    res.status(200).send(activeZones);
+
+    Promise.resolve(buildActiveZones())
+        .then(result => res.status(200).send(result)).catch(error => res.status(500).end())
 });
 
 app.post('/settings', (req, res) => {
@@ -103,6 +110,7 @@ app.post('/settings', (req, res) => {
         settings.server = { ...settings.server, ...obj.server }
 
     jsonFile.writeJSONFile(`${datafolderPath}/settings.json`, settings);
+    // processActiveZones();
     res.status(200).send(settings);
 });
 
@@ -135,7 +143,7 @@ app.post('/relays', (req, res) => {
     }
     relays.push(relay);
     jsonFile.writeJSONFile(`${datafolderPath}/relays.json`, relays);
-
+    // processActiveZones();
     return res.status(201).send(relay);
 });
 
@@ -151,12 +159,12 @@ app.get('/sensors', (req, res) => {
 // app.use((res, req) => req.updated ))
 
 app.post('/manual', (req, res) => {
-    //TEST IMPLEMENTATION JUST TO CHECK IF IT WORKS IN FE
-    var activeZone = req.body;
-    console.log('received manual for active zone: ');
-    console.dir(activeZone);
-    // setTimeout(() => res.end(), 1234);
-    res.end();
+    req.body.updated = Date.now();
+    overrides.push(req.body);
+    jsonFile.writeJSONFile(`${datafolderPath}/overrides.json`, overrides);
+    console.log(`received manual for active zone:${req.body} `);
+    res.status(201).end()
+    processTemperature();
 });
 
 app.post('/sensors', (req, res) => {
@@ -169,7 +177,7 @@ app.post('/sensors', (req, res) => {
 
 app.get('/sensors/:id', (req, res) => {
     var foundSensor = sensors.filter(s => s.id === req.params.id)[0];
-    return hlpers.responseReturn(req, res, foundSensor);
+    return helpers.responseReturn(req, res, foundSensor);
 });
 
 app.get('/schedules', (req, res) => {
@@ -189,6 +197,10 @@ app.get('/activezones', (req, res) => { res.status(200).send(activeZones); });
 //     console.log(`server is runing on port:${port}`)
 // })
 
+// function processActiveZones() {
+//     Promise.resolve(buildActiveZones())
+//         .then(result => activeZones = result).catch(error => console.log(`Error building zones ${error}`));;
+// }
 
 function buildActiveZones() {
     return settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode && z.isenabled === true).map(controlZone => buildActiveZone(controlZone));
@@ -200,10 +212,17 @@ function buildActiveZone(controlZone) {
     var activeSchedule = schedules.find(s => s.id === controlZone.schedule).schedule;
     var intervals = activeSchedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
     // const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-    const interval = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-    setInterval(processActiveZonePooling, (interval.to - currentTime) * 60 * 1000, controlZone);
+
+    var interval = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
+    overrideFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(interval.from / 60), interval.from % 60);
+    overrideTo = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(interval.to / 60), interval.to % 60);
+    var override = overrides.filter(override => new Date(override.updated) >= overrideFrom && new Date(override.updated) <= overrideTo && override.id === controlZone.id).sort((a, b) => b.updated - a.updated)[0];
+    interval.interval.temperature = override && override.temperatureOverride ? override.temperatureOverride : interval.interval.temperature;
+    // setInterval(processActiveZonePooling, (interval.to - currentTime) * 60 * 1000, controlZone);
+    setInterval(processTemperature, (interval.to - currentTime) * 60 * 1000);
 
     return {
+        id: controlZone.id,
         zone: zones.map(convertZoneFactory(controlZone.offset)).find(z => z.id === controlZone.zoneid),
         mode: controlZone.mode,
         interval: { ...interval.interval, end: interval.to },
@@ -211,20 +230,22 @@ function buildActiveZone(controlZone) {
     }
 }
 
-function processActiveZonePooling(controlZone) {
-    console.log('interval pooling', controlZone);
-    var foundZone = activeZones.filter(z => z.zone.id === controlZone.zoneid)[0];
-    if (foundZone)
-        activeZones.splice(controlZone.indexOf(foundZone), 1, buildActiveZone(controlZone));
-}
+// function processActiveZonePooling(controlZone) {
+//     console.log('interval pooling', controlZone);
+//     var foundZone = activeZones.filter(z => z.zone.id === controlZone.zoneid)[0];
+//     if (foundZone)
+//         activeZones.splice(controlZone.indexOf(foundZone), 1, buildActiveZone(controlZone));
+// }
 
 function processTemperature() {
     var tOn = [];
     var tOff = [];
-    activeZones.forEach(activeZone => {
+
+    buildActiveZones().forEach(activeZone => {
         //Heat Mode
         if (activeZone.mode === 0) {
             var targetTemperature = activeZone.interval.temperature + settings.temperature.threshold;
+            console.log(`Heat Mode for zone: ${activeZone.id} target temperature: ${targetTemperature}`);
             if (activeZone.zone.sensor.temperature.value > targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
             else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
         }
@@ -232,8 +253,9 @@ function processTemperature() {
         //Cool Mode
         if (activeZone.mode === 1) {
             var targetTemperature = activeZone.interval.temperature - settings.temperature.threshold;
-            if (activeZone.zone.sensor.temperature.value < targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); })
-            else activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay); });
+            console.log(`Cool Mode for zone: ${activeZone.id} target temperature: ${targetTemperature}`);
+            if (activeZone.zone.sensor.temperature.value < targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay); })
+            else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
         }
     });
     tOff.filter(r => tOn.indexOf(r) < 0).filter(r => r.isOn).forEach(t => t.turnOff());

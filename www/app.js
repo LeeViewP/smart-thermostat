@@ -33,6 +33,7 @@
 		const $ctrl = this;
 		$ctrl.hasImage = false;
 		$ctrl.$onInit = function() {
+			$ctrl.zoneControlId = $ctrl.zoneData.id;
 			$ctrl.zone = $ctrl.zoneData.zone;
 			$ctrl.sensor = $ctrl.zone && $ctrl.zone.sensor;
 			$ctrl.mode = $ctrl.zoneData.mode;
@@ -70,9 +71,14 @@
 				const newTemp = +result;
 				if(newTemp === $ctrl.schedule.temperature || !angular.isNumber(newTemp)) return;
 				else {
+					var postData = {
+						id:$ctrl.zoneControlId,
+						zoneId: $ctrl.zone.id,
+						temperatureOverride: newTemp
+					}
 					$ctrl.schedule.temperature = newTemp;
 					// console.log($ctrl.zoneData);
-					$http.post('manual', $ctrl.zoneData).then(() => {
+					$http.post('manual', postData).then(() => {
 						//THIS WILL TRIGGER A FACE RELOAD
 						$state.reload();
 					})
