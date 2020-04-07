@@ -52,6 +52,8 @@ else
   sudo apt-get -y install nodejs;
 fi
 
+echo -e "${CYAN}************* STEP: Installing git *************${NC}"
+sudo apt-get -y install git
 
 echo -e "${CYAN}************* STEP: Setup Smart Thermostat app & dependencies *************${NC}"
 sudo mkdir -p $APPSRVDIR    #main dir where smart-thermostat app lives
@@ -108,5 +110,6 @@ sudo systemctl start smart-thermostat.service
 # echo -e "${RED}! Important : ${YLW}If not done already - configure your Pi core settings (timezone, expand SD etc) by running ${GRN}raspi-config${NC}"
 
 echo -e "${CYAN}************* ALL DONE! *************${NC}"
+sudo chown -R pi:pi $APPSRVDIR
 cd ~/
 exit 0

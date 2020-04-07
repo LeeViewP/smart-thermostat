@@ -1,26 +1,17 @@
-const fs = require('fs');
-
-function readJSONFile(filename) {
-    return new Promise((resolve, reject) => {
-        let fileContent = require(filename);
-        if (fileContent.length === 0) {
-            reject({
-                status: 202,
-                message: "Empty file",
-            })
-        }
-        resolve(fileContent)
-    })
+function findDeepInObjectByArrayOfProperties(obj, arrayOfPropertyes) {
+    if (!obj) return;
+    if (arrayOfPropertyes.length < 1) return obj;
+    const [property] = arrayOfPropertyes;
+    const restOfProperties = [...arrayOfPropertyes].slice(1);
+    if (restOfProperties.length > 0) return findDeepInObjectByArrayOfProperties(obj[property], restOfProperties);
+    else return obj[property];
 }
-function writeJSONFile(filename, content) {
-    fs.writeFileSync(filename, JSON.stringify(content), 'utf8', (err) => {
-        if (err) {
-            console.log(err)
-        }
-    })
+
+function responseReturn(req, res, item) {
+    return res.status(item ? 200 : 404).send(item ? item : `Sorry, cant find that id: ${req.params.id}`);
 }
 
 module.exports = {
-    readJSONFile,
-    writeJSONFile
+    findDeepInObjectByArrayOfProperties,
+    responseReturn
 }
