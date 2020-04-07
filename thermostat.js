@@ -219,7 +219,7 @@ function buildActiveZone(controlZone) {
     var override = overrides.filter(override => new Date(override.updated) >= overrideFrom && new Date(override.updated) <= overrideTo && override.id === controlZone.id).sort((a, b) => b.updated - a.updated)[0];
     interval.interval.temperature = override && override.temperatureOverride ? override.temperatureOverride : interval.interval.temperature;
     // setInterval(processActiveZonePooling, (interval.to - currentTime) * 60 * 1000, controlZone);
-    setInterval(processTemperature, (interval.to - currentTime) * 60 * 1000);
+    // setInterval(processTemperature, (interval.to - currentTime) * 60 * 1000);
 
     return {
         id: controlZone.id,
