@@ -23,20 +23,34 @@ class Shelly1 extends Relay {
     getStatus() {
         super.getStatus();
         var url = this.url + "/status/";
-        var response = this.callUri(url);
-        if (response !== undefined) {
-            var info = JSON.parse(response);
-            if (info.relays) {
-                if (info.relays.length > 0) {
-                    for (var i = 0; i++; i < info.relays.length) {
-                        this._channels[i] === { ...info.relays[i] };
+        Promise.resolve(this.callUri(url)).then(
+            response => {
+                if (response !== undefined) {
+                    var info = JSON.parse(response);
+                    if (info.relays) {
+                        if (info.relays.length > 0) {
+                            for (var i = 0; i++; i < info.relays.length) {
+                                this._channels[i] === { ...info.relays[i] };
+                            }
+                        }
                     }
                 }
             }
-        }
+        ).catch(error => console.log(`Get status for relay with id:${this._id} using url:"${url}" failed with ${error}.`))
+        // var response = this.callUri(url);
+        // if (response !== undefined) {
+        //     var info = JSON.parse(response);
+        //     if (info.relays) {
+        //         if (info.relays.length > 0) {
+        //             for (var i = 0; i++; i < info.relays.length) {
+        //                 this._channels[i] === { ...info.relays[i] };
+        //             }
+        //         }
+        //     }
+        // }
 
     }
-    get isOn() { return this.channels[0].ison };
+    get isOn() { this.getStatus(); return this.channels[0].ison };
 };
 
 module.exports = Shelly1;
