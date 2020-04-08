@@ -1,0 +1,2 @@
+import { thMinutesToHumanisedStringFilterName, thMinutesToHumanisedStringFilter } from './minutesToHuman.filter.js'
+export const commonModule = angular.module('th-app.common', []).filter(thMinutesToHumanisedStringFilterName, thMinutesToHumanisedStringFilter).name;

@@ -7,7 +7,7 @@ const helpers = require('./helpers');
 
 const Shelly1 = require('./shelly1');
 
-const { www } = require('./www');
+const www = require('./www');
 
 const app = express();
 app.use(www);

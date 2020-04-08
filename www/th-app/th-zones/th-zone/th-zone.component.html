@@ -1,0 +1,52 @@
+<md-card md-whiteframe="3">
+	<md-card-title>	
+		<md-card-title-text>
+			<div class="md-headline" layout="row">
+				<md-icon flex="10" class="md-primary" md-svg-icon="{{$ctrl.modeIcon[$ctrl.mode]}}"></md-icon> 
+				<span flex md-truncate>{{::$ctrl.zone.name}}</span>
+			</div>
+			<div class="md-subhead" layout="row">
+				<md-icon flex="10" 
+							md-svg-icon="scheduled"
+							class="md-hue-2" 
+							data-ng-class="{'md-primary': $ctrl.sensorShouldBeActive }"></md-icon> 
+				<div flex="90">
+					<span> {{::$ctrl.schedule.start | thMinutesToHumanisedString}} -  {{::$ctrl.schedule.end | thMinutesToHumanisedString}}</span>
+				</div>
+			</div>
+		</md-card-title-text>
+		<md-card-title-media flex-offset="5">
+			<div class="md-media-md card-media" style="background: url(); background-size: cover">
+				<img ng-src="{{::$ctrl.zoneImageUrl}}">
+			</div>
+		</md-card-title-media>
+	</md-card-title>
+	<md-card-content>
+		<div class="md-display-1" layout="row">
+			<div flex="10" layout="row">
+				<md-icon md-svg-icon="thermometer" layut="row" class="md-primary s34"></md-icon>
+			</div>
+			<div flex="50"  layout="row" md-truncate>
+				{{::$ctrl.sensor.temperature.value}}
+				{{::$ctrl.sensor.temperature.unit}}
+			</div>
+			<div flex="30"  layout="row" layout-align="end center" class="md-title" data-ng-click="$ctrl.setManualTemperature($event)">
+				{{$ctrl.schedule.temperature}} {{::$ctrl.temperature.unit}}
+			</div>
+			<div flex="10"  layout="row">
+			<md-icon md-svg-icon="{{$ctrl.modeStatusIcon[$ctrl.mode]}}" 
+						class="md-hue-2 s20" 
+						data-ng-class="{'md-warn': $ctrl.sensorShouldBeActive() }"
+						data-ng-style="{'opacity': $ctrl.sensorShouldBeActive() ? 1 : 0.2}"></md-icon> 
+			</div>
+		</div>
+	<md-card-content>
+	<md-card-actions layout="row" layout-align-gt-xs="end center" layout-align="center center">
+		<md-button class="md-whiteframe-3dp" data-ng-click="$ctrl.changeTemperature(0.1)">
+			<md-icon md-svg-icon="up" layut="row"></md-icon>
+		</md-button>
+		<md-button class="md-whiteframe-3dp" data-ng-click="$ctrl.changeTemperature(-0.1)">
+			<md-icon md-svg-icon="down" layut="row"></md-icon>
+		</md-button>
+	</md-card-actions>
+</md-card>
