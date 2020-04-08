@@ -6,14 +6,24 @@
 		<md-toolbar>
 			<div class="md-toolbar-tools">
 				<md-button class="md-icon-button" aria-label="Zone" ng-disabled="false" data-ng-if="false">
-				Button 1
+				<md-icon md-svg-icon="thermostat" layut="row"></md-icon>
 				</md-button>
+				<md-icon md-svg-icon="thermostat" layut="row"></md-icon>
 				<h2 flex md-truncate>{{::$ctrl.Name}}</h2>
+				<md-button class="md-icon-button" aria-label="Zones" ng-disabled="false" data-ng-if="true">
+					<md-icon md-svg-icon="thermometer" layut="row"></md-icon>
+				</md-button>
+				<md-button class="md-icon-button" aria-label="Sensors" ng-disabled="false" data-ng-if="true">
+					<md-icon md-svg-icon="rooms" layut="row"></md-icon>
+				</md-button>
+				<md-button class="md-icon-button" aria-label="Relays" ng-disabled="false" data-ng-if="true">
+					<md-icon md-svg-icon="switch" layut="row"></md-icon>
+				</md-button>
 			</div>
 	  	</md-toolbar>`,
 		controller: function () {
 			const ctrl = this;
-			ctrl.Name = 'Zones';
+			ctrl.Name = 'Smart Thermostat';
 		}
 	});
 
@@ -56,6 +66,20 @@
 		$ctrl.manualMode = true;
 		$ctrl.modeIcon = ['heat', 'cool'];
 		$ctrl.modeStatusIcon = ['radiator', 'ac'];
+		$ctrl.changeTemperature = function (increment) {
+			if (!angular.isNumber(increment)) return;
+			var newTemp =  $ctrl.schedule.temperature+increment;
+			$ctrl.schedule.temperature =Number(parseFloat(newTemp).toFixed(2));
+			var postData = {
+				id: $ctrl.zoneControlId,
+				zoneId: $ctrl.zone.id,
+				temperatureOverride: $ctrl.schedule.temperature
+			}
+			$http.post('manual', postData).then(() => {
+				//THIS WILL TRIGGER A FACE RELOAD
+				$state.reload();
+			})
+		}
 		$ctrl.setManualTemperature = function (ev) {
 			if (!$ctrl.ENABLE_MANUAL_MODE_FEATURE_TOGGLE) return;
 			const dialog = $mdDialog.prompt()
@@ -85,7 +109,7 @@
 				}
 			});
 		};
-		$ctrl.ENABLE_MANUAL_MODE_FEATURE_TOGGLE = true;
+		$ctrl.ENABLE_MANUAL_MODE_FEATURE_TOGGLE = false;
 	};
 
 	app.component('thZone', {
@@ -133,6 +157,14 @@
 					</div>
 				</div>
 			<md-card-content>
+			<md-card-actions layout="row" layout-align="end center">
+				<md-button class="md-whiteframe-3dp" data-ng-click="$ctrl.changeTemperature(0.1)">
+					<md-icon md-svg-icon="up" layut="row"></md-icon>
+				</md-button>
+				<md-button class="md-whiteframe-3dp" data-ng-click="$ctrl.changeTemperature(-0.1)">
+					<md-icon md-svg-icon="down" layut="row"></md-icon>
+				</md-button>
+		  </md-card-actions>
 		</md-card>
 		`,
 		controller: thZoneController,
@@ -164,10 +196,10 @@
 		const $ctrl = this;
 		$ctrl.$onInit = function () {
 			$ctrl.changeMode = function () {
-				if($ctrl.mode.isOn) return;
+				if ($ctrl.mode.isOn) return;
 				var thermostat = { ...$ctrl.thermostat, mode: $ctrl.mode.mode };
 				// postData.mode = $ctrl.mode.mode;
-				$http.post('settings',{thermostat}).then(() => {
+				$http.post('settings', { thermostat }).then(() => {
 					//THIS WILL TRIGGER A FACE RELOAD
 					$state.reload();
 				});
@@ -176,7 +208,7 @@
 	}
 	// <md-button class="md-fab" data-ng-class="{'md-primary': $ctrl.mode.isOn }" data-ng-disabled="!$ctrl.mode.isEnabled" aria-label="{{::$ctrl.mode.name}}" data-ng-click="$ctrl.changeMode()">
 	// <md-icon md-svg-icon="{{$ctrl.mode.icon}}" layut="row"></md-icon>
-	
+
 	// </md-button>
 	app.component('thThermostatMode', {
 		template: `
@@ -196,10 +228,10 @@
 		controller: ['$http', function ($http) {
 			const $ctrl = this;
 			$ctrl.thermostatModes = [
-				{ mode: 0, name: "Heat", isEnabled: true, isOn: false , icon:"heat"},
-				{ mode: 1, name: "Cool", isEnabled: true, isOn: false , icon:"cool"},
-				{ mode: 2, name: "Auto", isEnabled: false, isOn: false , icon:"scheduled"},
-				{ mode: -1, name: "Off", isEnabled: true, isOn: false , icon:"off"}
+				{ mode: 0, name: "Heat", isEnabled: true, isOn: false, icon: "heat" },
+				{ mode: 1, name: "Cool", isEnabled: true, isOn: false, icon: "cool" },
+				{ mode: 2, name: "Auto", isEnabled: true, isOn: false, icon: "scheduled" },
+				{ mode: -1, name: "Off", isEnabled: true, isOn: false, icon: "off" }
 			];
 			$http.get('/settings/thermostat').then(result => {
 				$ctrl.thermostat = result.data;
@@ -229,5 +261,10 @@
 		$mdIconProvider.icon('ac', 'img/icons/air-conditioner.svg', 24);
 		$mdIconProvider.icon('scheduled', 'img/icons/clock-outline.svg', 24);
 		$mdIconProvider.icon('off', 'img/icons/power.svg', 24);
+		$mdIconProvider.icon('up', 'img/icons/menu-up.svg', 24);
+		$mdIconProvider.icon('down', 'img/icons/menu-down.svg', 24);
+		$mdIconProvider.icon('switch', 'img/icons/electric-switch.svg', 24);
+		$mdIconProvider.icon('rooms', 'img/icons/home-group.svg', 24);
+		$mdIconProvider.icon('thermostat', 'img/icons/thermostat.svg', 24);
 	}]);
 })()
