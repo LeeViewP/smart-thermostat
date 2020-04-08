@@ -1,0 +1,18 @@
+<section layout="row"
+		 layout-wrap=""
+		 layout-align="center center"
+		 layout-align-xs="start start">
+	<md-button 	data-ng-repeat="mode in $ctrl.modes track by mode.mode" 
+				data-ng-disabled="!mode.isEnabled" 
+				data-ng-class="{ 'md-primary': mode.mode === $ctrl.thermostat.mode } " 
+				data-ng-click="$ctrl.changeMode(mode.mode)"
+				layout="column"
+				flex="shrink"
+				flex-md="none"
+				flex-gt-md="none"
+				layout-align="center center">
+		<md-icon md-svg-icon="{{::mode.icon}}"></md-icon>
+		<span>{{::mode.name}}</span>
+	</md-button> 
+</section>
+<!-- md-whiteframe-3dp -->

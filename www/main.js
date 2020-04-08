@@ -1,31 +1,12 @@
+
+
 'use strict';
+import './th-app/app.module.js';
+
 (function () {
+	return;
 	var app = angular.module('ThermostatApp', ['ngMaterial', 'ngMessages', 'ui.router']);
-	app.component('thNav', {
-		template: `
-		<md-toolbar>
-			<div class="md-toolbar-tools">
-				<md-button class="md-icon-button" aria-label="Zone" ng-disabled="false" data-ng-if="false">
-				<md-icon md-svg-icon="thermostat" layut="row"></md-icon>
-				</md-button>
-				<md-icon md-svg-icon="thermostat" layut="row"></md-icon>
-				<h2 flex md-truncate>{{::$ctrl.Name}}</h2>
-				<md-button class="md-icon-button" aria-label="Zones" ng-disabled="false" data-ng-if="true">
-					<md-icon md-svg-icon="thermometer" layut="row"></md-icon>
-				</md-button>
-				<md-button class="md-icon-button" aria-label="Sensors" ng-disabled="false" data-ng-if="true">
-					<md-icon md-svg-icon="rooms" layut="row"></md-icon>
-				</md-button>
-				<md-button class="md-icon-button" aria-label="Relays" ng-disabled="false" data-ng-if="true">
-					<md-icon md-svg-icon="switch" layut="row"></md-icon>
-				</md-button>
-			</div>
-	  	</md-toolbar>`,
-		controller: function () {
-			const ctrl = this;
-			ctrl.Name = 'Smart Thermostat';
-		}
-	});
+	
 
 	app.filter('thMinutesToHumanisedString', [function () {
 		return function (min) {
@@ -102,10 +83,7 @@
 					}
 					$ctrl.schedule.temperature = newTemp;
 					// console.log($ctrl.zoneData);
-					$http.post('manual', postData).then(() => {
-						//THIS WILL TRIGGER A FACE RELOAD
-						$state.reload();
-					})
+					$http.post('manual', postData).then(() => this.$state.reload());
 				}
 			});
 		};
@@ -240,31 +218,31 @@
 		}],
 	})
 
-	app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
-		$urlRouterProvider.when('', '/app');
-		const rootState = {
-			name: 'root',
-			url: '/app',
-			views: {
-				'toolbar': 'thNav',
-				'content': 'thZones',
-			},
-		};
-		$stateProvider.state(rootState);
-	}]);
+	// app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+	// 	$urlRouterProvider.when('', '/app');
+	// 	const rootState = {
+	// 		name: 'root',
+	// 		url: '/app',
+	// 		views: {
+	// 			'toolbar': 'thNav',
+	// 			'content': 'thZones',
+	// 		},
+	// 	};
+	// 	$stateProvider.state(rootState);
+	// }]);
 
-	app.config(['$mdIconProvider', function ($mdIconProvider) {
-		$mdIconProvider.icon('cool', 'img/icons/snowflake.svg', 24);
-		$mdIconProvider.icon('heat', 'img/icons/fire.svg', 24);
-		$mdIconProvider.icon('thermometer', 'img/icons/thermometer.svg', 24);
-		$mdIconProvider.icon('radiator', 'img/icons/radiator.svg', 24);
-		$mdIconProvider.icon('ac', 'img/icons/air-conditioner.svg', 24);
-		$mdIconProvider.icon('scheduled', 'img/icons/clock-outline.svg', 24);
-		$mdIconProvider.icon('off', 'img/icons/power.svg', 24);
-		$mdIconProvider.icon('up', 'img/icons/menu-up.svg', 24);
-		$mdIconProvider.icon('down', 'img/icons/menu-down.svg', 24);
-		$mdIconProvider.icon('switch', 'img/icons/electric-switch.svg', 24);
-		$mdIconProvider.icon('rooms', 'img/icons/home-group.svg', 24);
-		$mdIconProvider.icon('thermostat', 'img/icons/thermostat.svg', 24);
-	}]);
+	// app.config(['$mdIconProvider', function ($mdIconProvider) {
+	// 	$mdIconProvider.icon('cool', 'img/icons/snowflake.svg', 24);
+	// 	$mdIconProvider.icon('heat', 'img/icons/fire.svg', 24);
+	// 	$mdIconProvider.icon('thermometer', 'img/icons/thermometer.svg', 24);
+	// 	$mdIconProvider.icon('radiator', 'img/icons/radiator.svg', 24);
+	// 	$mdIconProvider.icon('ac', 'img/icons/air-conditioner.svg', 24);
+	// 	$mdIconProvider.icon('scheduled', 'img/icons/clock-outline.svg', 24);
+	// 	$mdIconProvider.icon('off', 'img/icons/power.svg', 24);
+	// 	$mdIconProvider.icon('up', 'img/icons/menu-up.svg', 24);
+	// 	$mdIconProvider.icon('down', 'img/icons/menu-down.svg', 24);
+	// 	$mdIconProvider.icon('switch', 'img/icons/electric-switch.svg', 24);
+	// 	$mdIconProvider.icon('rooms', 'img/icons/home-group.svg', 24);
+	// 	$mdIconProvider.icon('thermostat', 'img/icons/thermostat.svg', 24);
+	// }]);
 })()

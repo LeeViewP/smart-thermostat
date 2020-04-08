@@ -1,0 +1,27 @@
+<md-sidenav class="md-sidenav-left" 
+				md-component-id="{{::$ctrl.navId}}"
+				md-whiteframe="4">
+	<md-toolbar data-ng-click="$ctrl.close()">
+		<h1 class="md-toolbar-tools">Menu</h1>
+	</md-toolbar>
+	<md-content data-ng-click="$ctrl.close()">
+		<section layout="column" ng-repeat="menuItem in $ctrl.menuItems">
+			<md-button 
+				flex
+				ui-sref="{{menuItem.state}}" 
+				layout="row"
+				layout-align="start center"
+				ui-sref-active="md-primary">
+				<md-icon flex="25" 
+						 md-svg-icon="{{menuItem.icon}}">
+				</md-icon>
+				<span flex 
+					  layout="row" 
+					  layout-align="start center">
+					{{menuItem.name}}
+				</span>
+			</md-button>
+			<md-divider></md-divider>
+		</section>
+	</md-content>
+</md-sidenav>
