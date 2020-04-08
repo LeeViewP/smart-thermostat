@@ -162,7 +162,7 @@ app.post('/manual', (req, res) => {
     req.body.updated = Date.now();
     overrides.push(req.body);
     jsonFile.writeJSONFile(`${datafolderPath}/overrides.json`, overrides);
-    console.log(`received manual for active zone:${req.body} `);
+    console.log(`received manual for active zone:${JSON.stringify(req.body)} `);
     res.status(201).end()
     processTemperature();
 });
@@ -203,7 +203,22 @@ app.get('/activezones', (req, res) => { res.status(200).send(activeZones); });
 // }
 
 function buildActiveZones() {
-    return settings.thermostat.zonecontrol.filter(z => z.mode === settings.thermostat.mode && z.isenabled === true).map(controlZone => buildActiveZone(controlZone));
+    //need some better logic to detect the heat or cool modes (will not go toghether to avoid some zones to start heating and other to startcooling in the same time)
+    var thMode = settings.thermostat.mode;
+    if (settings.thermostat.mode === 2) {
+        var date = new Date();
+        switch (date.getMonth()) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 10:
+            case 11:
+                thMode = 0; break;
+            default: thMode = 1; break;
+        }
+    }
+    return settings.thermostat.zonecontrol.filter(z => z.mode === thMode && z.isenabled === true).map(controlZone => buildActiveZone(controlZone));
 }
 
 function buildActiveZone(controlZone) {
@@ -211,53 +226,56 @@ function buildActiveZone(controlZone) {
     const currentTime = date.getHours() * 60 + date.getMinutes();
     var activeSchedule = schedules.find(s => s.id === controlZone.schedule).schedule;
     var intervals = activeSchedule[date.getDay()].map((interval, index, array) => ({ from: interval.start, to: ((array[index + 1] && array[index + 1].start) || 1440) - 1, interval: interval }));
-    // const { interval } = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
 
     var interval = intervals.find(interval => currentTime >= interval.from && currentTime <= interval.to);
-    overrideFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(interval.from / 60), interval.from % 60);
-    overrideTo = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(interval.to / 60), interval.to % 60);
+    //building new Object to avoid contamination
+    var currentInterval = { start: interval.from, temperature: interval.interval.temperature, end: interval.to };
+    overrideFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(currentInterval.start / 60), currentInterval.start % 60);
+    overrideTo = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(currentInterval.end / 60), currentInterval.end % 60);
     var override = overrides.filter(override => new Date(override.updated) >= overrideFrom && new Date(override.updated) <= overrideTo && override.id === controlZone.id).sort((a, b) => b.updated - a.updated)[0];
-    interval.interval.temperature = override && override.temperatureOverride ? override.temperatureOverride : interval.interval.temperature;
-    // setInterval(processActiveZonePooling, (interval.to - currentTime) * 60 * 1000, controlZone);
-    setInterval(processTemperature, (interval.to - currentTime) * 60 * 1000);
+    if (override && override.temperatureOverride) currentInterval.temperature = override.temperatureOverride;
 
     return {
         id: controlZone.id,
         zone: zones.map(convertZoneFactory(controlZone.offset)).find(z => z.id === controlZone.zoneid),
         mode: controlZone.mode,
-        interval: { ...interval.interval, end: interval.to },
+        interval: currentInterval,
         temperature: controlZone.temperature || settings.temperature
     }
 }
 
-// function processActiveZonePooling(controlZone) {
-//     console.log('interval pooling', controlZone);
-//     var foundZone = activeZones.filter(z => z.zone.id === controlZone.zoneid)[0];
-//     if (foundZone)
-//         activeZones.splice(controlZone.indexOf(foundZone), 1, buildActiveZone(controlZone));
-// }
-
 function processTemperature() {
     var tOn = [];
     var tOff = [];
-
+    console.log(`Start processing temperature`);
     buildActiveZones().forEach(activeZone => {
         //Heat Mode
         if (activeZone.mode === 0) {
-            var targetTemperature = activeZone.interval.temperature + settings.temperature.threshold;
-            console.log(`Heat Mode for zone: ${activeZone.id} target temperature: ${targetTemperature}`);
-            if (activeZone.zone.sensor.temperature.value > targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
-            else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            // var targetTemperature = activeZone.interval.temperature + settings.temperature.threshold; Number(parseFloat(newTemp).toFixed(2));
+            var minTargetTemperature = Number(parseFloat(activeZone.interval.temperature - settings.temperature.threshold).toFixed(2));
+            var maxTargetTemperature = Number(parseFloat(activeZone.interval.temperature + settings.temperature.threshold).toFixed(2));
+            if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
+            if (activeZone.zone.sensor.temperature.value < minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+
+            console.log(`Heat Mode set for : ${activeZone.id}-${activeZone.zone.name} between: ${minTargetTemperature} and ${maxTargetTemperature} current temperature: ${activeZone.zone.sensor.temperature.value}`);
+            // if (activeZone.zone.sensor.temperature.value > targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
+            // else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
         }
 
         //Cool Mode
         if (activeZone.mode === 1) {
-            var targetTemperature = activeZone.interval.temperature - settings.temperature.threshold;
-            console.log(`Cool Mode for zone: ${activeZone.id} target temperature: ${targetTemperature}`);
-            if (activeZone.zone.sensor.temperature.value < targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay); })
-            else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            var minTargetTemperature = Number(parseFloat(activeZone.interval.temperature - settings.temperature.threshold).toFixed(2));
+            var maxTargetTemperature = Number(parseFloat(activeZone.interval.temperature + settings.temperature.threshold).toFixed(2));
+            if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            if (activeZone.zone.sensor.temperature.value < minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
+
+            // var targetTemperature = activeZone.interval.temperature - settings.temperature.threshold;
+            console.log(`Cool Mode set for : ${activeZone.id}-${activeZone.zone.name} between: ${minTargetTemperature} and ${maxTargetTemperature} current temperature: ${activeZone.zone.sensor.temperature.value}`);
+            // if (activeZone.zone.sensor.temperature.value < targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay); })
+            // else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
         }
     });
-    tOff.filter(r => tOn.indexOf(r) < 0).filter(r => r.isOn).forEach(t => t.turnOff());
+    tOff.filter(r => tOn.indexOf(r) < 0).forEach(t => t.turnOff());//.filter(r => r.isOn)
     tOn.filter(r => !r.isOn).forEach(t => t.turnOn());
+    console.log(`Stop processing temperature`);
 }

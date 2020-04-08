@@ -2,7 +2,7 @@
     {
         "id": "1",
         "temperature": {
-            "value": 18.5,
+            "value": 23.46,
             "unit": "C"
         },
         "humidity": {
