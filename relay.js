@@ -9,6 +9,7 @@ module.exports = class Relay {
             var channel = {};
             this._channels.push(channel)
         }
+        this._status = {};
     }
 
     getStatus() {

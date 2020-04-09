@@ -13,6 +13,8 @@ const app = express();
 app.use(www);
 const datafolderPath = './data/'
 
+require("console-stamp")(console, 'mm-dd-yy_HH:MM:ss.l');
+
 // Parse incoming requests data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -77,11 +79,11 @@ Promise.all(
         //     .then(() => {
         setInterval(processTemperature, settings.timeProcessors.processTemperature);
         app.listen(settings.server.port, () => {
-            console.log(`server is runing on port:${settings.server.port}`)
+            console.info(`server is runing on port:${settings.server.port}`)
         })
         processTemperature();
         // });
-    }).catch(error => console.log(`Error in promises ${error}`));
+    }).catch(error => console.error(`Error in promises ${error}`));
 
 
 app.post(['/relays', '/sensors', '/schedules'], (req, res, next) => {
@@ -247,17 +249,17 @@ function buildActiveZone(controlZone) {
 function processTemperature() {
     var tOn = [];
     var tOff = [];
-    console.log(`Start processing temperature`);
+    console.info(`Start processing temperature`);
     buildActiveZones().forEach(activeZone => {
         //Heat Mode
         if (activeZone.mode === 0) {
             // var targetTemperature = activeZone.interval.temperature + settings.temperature.threshold; Number(parseFloat(newTemp).toFixed(2));
             var minTargetTemperature = Number(parseFloat(activeZone.interval.temperature - settings.temperature.threshold).toFixed(2));
             var maxTargetTemperature = Number(parseFloat(activeZone.interval.temperature + settings.temperature.threshold).toFixed(2));
-            if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
+            // if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
             if (activeZone.zone.sensor.temperature.value < minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
 
-            console.log(`Heat Mode set for : ${activeZone.id}-${activeZone.zone.name} between: ${minTargetTemperature} and ${maxTargetTemperature} current temperature: ${activeZone.zone.sensor.temperature.value}`);
+            console.info(`Heat Mode set for : ${activeZone.id}-${activeZone.zone.name} between: ${minTargetTemperature} and ${maxTargetTemperature} current temperature: ${activeZone.zone.sensor.temperature.value}`);
             // if (activeZone.zone.sensor.temperature.value > targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
             // else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
         }
@@ -265,17 +267,18 @@ function processTemperature() {
         //Cool Mode
         if (activeZone.mode === 1) {
             var minTargetTemperature = Number(parseFloat(activeZone.interval.temperature - settings.temperature.threshold).toFixed(2));
+            if (activeZone.zone.sensor.temperature.value > minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
             var maxTargetTemperature = Number(parseFloat(activeZone.interval.temperature + settings.temperature.threshold).toFixed(2));
-            if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
-            if (activeZone.zone.sensor.temperature.value < minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
+            // if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            // if (activeZone.zone.sensor.temperature.value < minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
 
             // var targetTemperature = activeZone.interval.temperature - settings.temperature.threshold;
-            console.log(`Cool Mode set for : ${activeZone.id}-${activeZone.zone.name} between: ${minTargetTemperature} and ${maxTargetTemperature} current temperature: ${activeZone.zone.sensor.temperature.value}`);
+            console.info(`Cool Mode set for : ${activeZone.id}-${activeZone.zone.name} between: ${minTargetTemperature} and ${maxTargetTemperature} current temperature: ${activeZone.zone.sensor.temperature.value}`);
             // if (activeZone.zone.sensor.temperature.value < targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay); })
             // else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
         }
     });
-    tOff.filter(r => tOn.indexOf(r) < 0).forEach(t => t.turnOff());//.filter(r => r.isOn)
-    tOn.filter(r => !r.isOn).forEach(t => t.turnOn());
-    console.log(`Stop processing temperature`);
+    // tOff.filter(r => tOn.indexOf(r) < 0).forEach(t => t.turnOff());//.filter(r => r.isOn)
+    tOn.filter(r => !r.isOn).forEach(t => t.turnOn(10*60));
+    console.info(`Stop processing temperature`);
 }

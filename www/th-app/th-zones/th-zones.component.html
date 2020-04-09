@@ -1,8 +1,12 @@
-<md-content layout="column" layout-gt-xs="row" layout-gt-xs-padding>
-	<th-modes data-thermostat="$ctrl.settingsThermostat" flex></th-modes>
+<md-content layout="column" layout-gt-xs-padding layout-fill>
+  <md-subheader class="no-padding">
+    <th-modes data-thermostat="$ctrl.settingsThermostat"></th-modes>
+    <md-divider></md-divider>
+  </md-subheader>
+  <section data-ng-if="$ctrl.activeZones.length > 0" layout="column" layout-gt-md = "row">
+    <th-zone flex data-ng-repeat="activeZone in $ctrl.activeZones track by activeZone.zone.id" data-zone="activeZone" layout-padding></th-zone>
+  </section>
+  <section data-ng-if="$ctrl.activeZones.length < 1">
+    <h2 class="md-flex"  flex layout="row" layout-align="center center">Thermostat is off</h2>
+  </section>
 </md-content>
-<md-divider></md-divider>
-<md-content layout="column" layout-gt-xs="row" layout-padding>
-   <th-zone flex data-ng-repeat="activeZone in $ctrl.activeZones track by activeZone.zone.id" data-zone="activeZone"></th-zone>
-   <h2 class="md-flex" data-ng-if="$ctrl.activeZones.length < 1" flex layout="row" layout-align="center center">Thermostat is off</h2>
- </md-content>
