@@ -1,4 +1,9 @@
 <md-content ui-view>
-	<h1>I am the bloody ROOMS State TEMPLATE! Piss off!</h1>
-	<md-button ui-sref="app.rooms.room({roomid: 'VADIM_TUDOR'})">take me to the heaven</md-button>
+	<section data-ng-if="$ctrl.activeRooms.length > 0" layout="column" layout-gt-md = "row">
+		<th-room flex data-ng-repeat="activeRoom in $ctrl.activeRooms track by activeRoom.id" data-room="activeRoom" layout-padding></th-room>
+	  </section>
+	  <section data-ng-if="$ctrl.activeRooms.length < 1">
+		<h2 class="md-flex"  flex layout="row" layout-align="center center">There is no room defined!</h2>
+	  </section>
+	<!-- <md-button ui-sref="app.rooms.room({roomid: 'VADIM_TUDOR'})">take me to the heaven</md-button> -->
 </md-content>

@@ -123,6 +123,16 @@ app.get('/settings/*', (req, res) => {
     else return res.status(404).end();
 });
 
+app.post('/manual', (req, res) => {
+    req.body.updated = Date.now();
+    overrides.push(req.body);
+    jsonFile.writeJSONFile(`${datafolderPath}/overrides.json`, overrides);
+    console.log(`received manual for active zone:${JSON.stringify(req.body)} `);
+    res.status(201).end()
+    processTemperature();
+});
+
+
 app.get('/relays', (req, res) => {
     res.status(200).send(relays);
 });
@@ -149,6 +159,15 @@ app.post('/relays', (req, res) => {
     return res.status(201).send(relay);
 });
 
+app.delete('/relays/:id', (req, res) => {
+    var foundZone = relays.filter(s => s.id === req.params.id)[0];
+    res.status(204).end();
+    return;
+    if (foundSensor) sensors.splice(sensors.indexOf(foundSensor), 1);
+    jsonFile.writeJSONFile(`${datafolderPath}/sensors.json`, sensors);
+    res.status(204).end()
+});
+
 app.get('/relays/:id', (req, res) => {
     var foundRelay = relays.filter(s => s._id === req.params.id)[0];
     return helpers.responseReturn(req, res, foundRelay);
@@ -160,21 +179,21 @@ app.get('/sensors', (req, res) => {
 
 // app.use((res, req) => req.updated ))
 
-app.post('/manual', (req, res) => {
-    req.body.updated = Date.now();
-    overrides.push(req.body);
-    jsonFile.writeJSONFile(`${datafolderPath}/overrides.json`, overrides);
-    console.log(`received manual for active zone:${JSON.stringify(req.body)} `);
-    res.status(201).end()
-    processTemperature();
-});
-
 app.post('/sensors', (req, res) => {
     var foundSensor = sensors.filter(s => s.id === req.body.id)[0];
     if (!foundSensor) sensors.push({ ...req.body });
     else sensors.splice(sensors.indexOf(foundSensor), 1, { ...foundSensor, ...req.body });
     jsonFile.writeJSONFile(`${datafolderPath}/sensors.json`, sensors);
     res.status(201).end()
+});
+
+app.delete('/sensors/:id', (req, res) => {
+    var foundSensor = sensors.filter(s => s.id === req.params.id)[0];
+    res.status(204).end();
+    return;
+    if (foundSensor) sensors.splice(sensors.indexOf(foundSensor), 1);
+    jsonFile.writeJSONFile(`${datafolderPath}/sensors.json`, sensors);
+    res.status(204).end()
 });
 
 app.get('/sensors/:id', (req, res) => {
@@ -192,6 +211,15 @@ app.get('/schedules/:id', (req, res) => {
 });
 
 app.get('/zones', (req, res) => { res.status(200).send(zones); });
+
+app.delete('/zones/:id', (req, res) => {
+    var foundZone = zones.filter(s => s.id === req.params.id)[0];
+    res.status(204).end();
+    return;
+    if (foundSensor) sensors.splice(sensors.indexOf(foundSensor), 1);
+    jsonFile.writeJSONFile(`${datafolderPath}/sensors.json`, sensors);
+    res.status(204).end()
+});
 
 app.get('/activezones', (req, res) => { res.status(200).send(activeZones); });
 

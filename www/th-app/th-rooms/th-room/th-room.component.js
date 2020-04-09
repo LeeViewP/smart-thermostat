@@ -1,32 +1,32 @@
-class ThSensorController {
+class ThRoomController {
 	static $inject = ['$http', '$mdDialog', '$state'];
-
+	
 
 	constructor($http, $mdDialog, $state) {
-		this.$http = $http,
-			this.$mdDialog = $mdDialog,
-			this.$state = $state
-
+		this.$http = $http, 
+		this.$mdDialog = $mdDialog, 
+		this.$state = $state
+		
 	}
 	$onInit() {
-
-		this.sensor = this.sensorData;
-		this.lastUpdated = new Date(this.sensor.updated);
+		
+		this.room = this.roomData;
+		// console.info(this.room);
 	}
 	delete = function (ev) {
 		const dialog = this.$mdDialog.confirm()
-			.title('Do you want to delete the sensor?')
+			.title('Do you want to delete the room?')
 			.textContent('All of the banks have agreed to forgive you your debts.')
 			.targetEvent(ev)
 			.ok('Delete')
 			.cancel('Cancel');
 		const http = this.$http;
-		const id=this.sensor.id;
+		const id=this.room.id;
 		const $state= this.$state;
 		this.$mdDialog
 			.show(dialog)
 			.then(function (result) {
-				http.delete(`sensors/${id}`).then(() => {
+				http.delete(`zones/${id}`).then(() => {
 					//THIS WILL TRIGGER A FACE RELOAD
 					$state.reload();
 				}).catch(error=>console.log(error))
@@ -36,11 +36,11 @@ class ThSensorController {
 }
 
 
-export const thSensorName = 'thSensor';
-export const thSensorComponent = {
-	templateUrl: 'th-app/th-sensors/th-sensor/th-sensor.component.html',
-	controller: ThSensorController,
+export const thRoomName = 'thRoom';
+export const thRoomComponent = {
+	templateUrl: 'th-app/th-rooms/th-room/th-room.component.html',
+	controller: ThRoomController,
 	bindings: {
-		sensorData: '<sensor'
+		roomData: '<room'
 	}
 };

@@ -1,0 +1,45 @@
+<md-card md-whiteframe="3">
+	<md-card-title>
+		<md-card-title-text>
+			<div class="md-headline" layout="row">
+				<md-icon flex="10" class="md-primary" md-svg-icon=""></md-icon>
+				<span flex md-truncate>{{::$ctrl.room.name}}</span>
+			</div>
+			<div class="md-caption" layout="row">
+				<md-icon flex="10" class="md-primary" md-svg-icon=""></md-icon>
+				<span flex md-truncate>{{::$ctrl.room.id}}</span>
+			</div>
+		</md-card-title-text>
+	</md-card-title>
+	<md-card-content>
+		<div class="md-body-2" layout="row">
+			<div flex="10" layout="row">
+				<md-icon md-svg-icon="temperature" layut="row" class="md-primary"></md-icon>
+			</div>
+			<div flex="90" layout="row" md-truncate>
+				{{::$ctrl.room.sensor.id}}
+			</div>
+		</div>
+		<div class="md-body-2" layout="row">
+			<div flex="10" layout="row">
+				<md-icon md-svg-icon="switch" layut="row" class="md-primary"></md-icon>
+			</div>
+			<div flex="90" layout="row" md-truncate>
+				<section flex data-ng-repeat="relay in $ctrl.room.relays track by relay.id" data-relay="relay"
+					layout-padding>
+					{{relay.id}}
+				</section>
+			</div>
+		</div>
+	</md-card-content>
+	<md-card-actions layout="row" layout-align-gt-xs="end center" layout-align="center center">
+		<md-button ui-sref="app.rooms.room({roomid: $ctrl.room.id, room: $ctrl.room})">
+			edit
+		</md-button>
+		<md-button data-ng-click="$ctrl.delete()">
+			delete
+		</md-button>
+
+		
+	</md-card-actions>
+</md-card>

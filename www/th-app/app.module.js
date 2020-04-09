@@ -11,6 +11,7 @@ import { thRoomsModule } from './th-rooms/th-rooms.module.js';
 import { thSwitchModule } from './th-switch/th-switch.module.js';
 import { thSensorsModule } from './th-sensors/th-sensors.module.js';//
 import { thSchedulesModule } from './th-schedules/th-schedules.module.js';
+// import { thRoomsModule } from './th-rooms/th-rooms.module.js';
 // import { thExampleModule } from './th-example/th-example.module.js';
 
 const externalDependencies = [

@@ -1,7 +1,7 @@
 class ThZoneController {
 	static $inject = ['$http', '$mdDialog', '$state'];
 	
-	ENABLE_MANUAL_MODE_FEATURE_TOGGLE = false;
+	ENABLE_MANUAL_MODE_FEATURE_TOGGLE = true;
 	modeIcon = ['heat', 'cool'];
 	modeStatusIcon = ['radiator', 'ac'];
 

@@ -34,5 +34,10 @@
 				{{::$ctrl.sensor.updated  | date : 'medium' }}
 			</div>
 		</div>
-	<md-card-content>
+	</md-card-content>
+	<md-card-actions layout="row" layout-align-gt-xs="end center" layout-align="center center">
+		<md-button data-ng-click="$ctrl.delete()">
+			delete
+		</md-button>
+	</md-card-actions>
 </md-card>
