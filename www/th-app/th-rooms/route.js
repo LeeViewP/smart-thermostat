@@ -6,7 +6,7 @@ export const thRoomsRoutesConfig = ['$stateProvider', function ($stateProvider) 
 		data: {
 			name: 'Rooms',
 			icon: 'rooms',
-			menuPosition: 200
+			menuPosition: 300
 		}
 	});
 	$stateProvider.state({

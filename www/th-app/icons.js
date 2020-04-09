@@ -11,4 +11,7 @@ export const iconsConfig = ['$mdIconProvider', function ($mdIconProvider) {
 	$mdIconProvider.icon('switch', 'img/icons/electric-switch.svg', 24);
 	$mdIconProvider.icon('rooms', 'img/icons/home-group.svg', 24);
 	$mdIconProvider.icon('thermostat', 'img/icons/thermostat.svg', 24);
+	$mdIconProvider.icon('temperature', 'img/icons/thermometer-lines.svg', 24);
+	$mdIconProvider.icon('humidity', 'img/icons/water-percent.svg', 24);
+	$mdIconProvider.icon('timer', 'img/icons/timer.svg', 24);
 }];
