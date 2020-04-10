@@ -1,0 +1,41 @@
+<md-card md-whiteframe="3">
+	<md-card-title>
+		<md-card-title-text>
+			<div class="md-headline" layout="row">
+				
+					<md-icon flex="10" md-svg-icon="scheduled" layut="row" class="md-primary"></md-icon>
+				<span flex md-truncate>{{::$ctrl.id}}</span>
+			</div>
+		</md-card-title-text>
+	</md-card-title>
+	<md-card-content>
+		<div class="md-body-2" layout="row">
+			<div flex layout="column" md-truncate>
+				<md-tabs md-dynamic-height md-border-bottom >
+					<md-tab label={{::$ctrl.getDayOfWeek(day)}} data-ng-repeat="(day, schedule) in $ctrl.schedules track by day">
+						<section flex data-ng-repeat="time in schedule track by $index" data-time="time" layout-padding>
+							<section>from {{time.start | thMinutesToHumanisedString}} temperature is set to: {{time.temperature}}</section>
+						</section>
+					</md-tab>
+				</md-tabs>
+				<!-- <section  flex data-ng-repeat="schedule in $ctrl.schedules track by $index" data-schedule="schedule" layout-padding>
+					<div>{{::$ctrl.getDayOfWeek($index)}}</div>
+					<section flex data-ng-repeat="time in schedule track by $index" data-time="time" layout-padding>
+						<div>{{time.start}} - {{time.temperature}}</div>
+					</section>
+					<div>{{schedule | json}}</div>
+				</section>-->
+			</div> 
+		</div>
+	</md-card-content>
+	<md-card-actions layout="row" layout-align-gt-xs="end center" layout-align="center center">
+		<!-- <md-button ui-sref="app.rooms.room({roomid: $ctrl.room.id, room: $ctrl.room})">
+			edit
+		</md-button> -->
+		<md-button data-ng-click="$ctrl.delete()">
+			delete
+		</md-button>
+
+		
+	</md-card-actions>
+</md-card>

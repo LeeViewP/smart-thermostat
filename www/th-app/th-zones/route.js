@@ -4,7 +4,7 @@ export const thZonesRoutesConfig = ['$stateProvider', function ($stateProvider) 
 		url: '/zones',
 		component: 'thZones',
 		data: {
-			name: 'Zones',
+			name: 'Dashboard',
 			icon: 'thermostat',
 			menuPosition: 100
 		},

@@ -8,7 +8,7 @@ import { thZonesModule } from './th-zones/th-zones.module.js';
 import { commonModule } from './common/common.module.js';
 import { thSidenavModule } from './th-sidenav/th-sidenav.module.js';
 import { thRoomsModule } from './th-rooms/th-rooms.module.js';
-import { thSwitchModule } from './th-switch/th-switch.module.js';
+import { thSwitchesModule } from './th-switches/th-switches.module.js';
 import { thSensorsModule } from './th-sensors/th-sensors.module.js';//
 import { thSchedulesModule } from './th-schedules/th-schedules.module.js';
 // import { thRoomsModule } from './th-rooms/th-rooms.module.js';
@@ -26,7 +26,7 @@ const internalDependencies = [
 	thToolbarModule,
 	thZonesModule,
 	thRoomsModule,
-	thSwitchModule,
+	thSwitchesModule,
 	thSensorsModule,
 	thSchedulesModule,
 ];
