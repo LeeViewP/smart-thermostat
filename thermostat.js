@@ -285,7 +285,7 @@ function processTemperature() {
             var minTargetTemperature = Number(parseFloat(activeZone.interval.temperature - settings.temperature.threshold).toFixed(2));
             var maxTargetTemperature = Number(parseFloat(activeZone.interval.temperature + settings.temperature.threshold).toFixed(2));
             // if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
-            if (activeZone.zone.sensor.temperature.value < minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            if (activeZone.zone.sensor.temperature.value < minTargetTemperature || activeZone.zone.sensor.temperature.value < activeZone.interval.temperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
 
             console.info(`Heat Mode set for : ${activeZone.id}-${activeZone.zone.name} between: ${minTargetTemperature} and ${maxTargetTemperature} current temperature: ${activeZone.zone.sensor.temperature.value}`);
             // if (activeZone.zone.sensor.temperature.value > targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
@@ -295,7 +295,7 @@ function processTemperature() {
         //Cool Mode
         if (activeZone.mode === 1) {
             var minTargetTemperature = Number(parseFloat(activeZone.interval.temperature - settings.temperature.threshold).toFixed(2));
-            if (activeZone.zone.sensor.temperature.value > minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            if (activeZone.zone.sensor.temperature.value > minTargetTemperature || activeZone.zone.sensor.temperature.value > activeZone.interval.temperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
             var maxTargetTemperature = Number(parseFloat(activeZone.interval.temperature + settings.temperature.threshold).toFixed(2));
             // if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
             // if (activeZone.zone.sensor.temperature.value < minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
@@ -307,6 +307,6 @@ function processTemperature() {
         }
     });
     // tOff.filter(r => tOn.indexOf(r) < 0).forEach(t => t.turnOff());//.filter(r => r.isOn)
-    tOn.filter(r => !r.isOn).forEach(t => t.turnOn(10*60));
+    tOn.filter(r => !r.isOn).forEach(t => t.turnOn(10 * 60));
     console.info(`Stop processing temperature`);
 }
