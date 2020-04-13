@@ -1,14 +1,14 @@
 class ThZoneController {
 	static $inject = ['$http', '$mdDialog', '$state'];
-	
+
 	ENABLE_MANUAL_MODE_FEATURE_TOGGLE = true;
 	modeIcon = ['heat', 'cool'];
 	modeStatusIcon = ['radiator', 'ac'];
 
 	constructor($http, $mdDialog, $state) {
-		this.$http = $http, 
-		this.$mdDialog = $mdDialog, 
-		this.$state = $state
+		this.$http = $http,
+			this.$mdDialog = $mdDialog,
+			this.$state = $state
 		this.mode = -1;
 	}
 	$onInit() {
@@ -24,12 +24,12 @@ class ThZoneController {
 		this.schedule.temperature = parseFloat(this.schedule.temperature).toFixed(2);
 
 		if (customImageUrl) this.$http.get(customImageUrl)
-		.then(response => { if (response.status === 200) this.zoneImageUrl = customImageUrl; }, angular.noop)
-		.finally(() => {if (this.zoneImageUrl === undefined) this.zoneImageUrl = '/img/zones/$$default.jpg'});
+			.then(response => { if (response.status === 200) this.zoneImageUrl = customImageUrl; }, angular.noop)
+			.finally(() => { if (this.zoneImageUrl === undefined) this.zoneImageUrl = '/img/zones/$$default.jpg' });
 	}
 	changeTemperature(increment) {
 		if (!angular.isNumber(increment)) return;
-		const newTemp =  (+this.schedule.temperature + increment).toFixed(2);
+		const newTemp = (+this.schedule.temperature + increment).toFixed(2);
 		this.schedule.temperature = parseFloat(newTemp);
 
 		var postData = {
@@ -50,7 +50,7 @@ class ThZoneController {
 			.required(true)
 			.ok('Set')
 			.cancel('Cancel');
-		
+
 		this.$mdDialog
 			.show(dialog)
 			.then(function (result) {
@@ -70,9 +70,11 @@ class ThZoneController {
 						this.$state.reload();
 					})
 				}
-		});
+			});
 	}
 	sensorShouldBeActive = function () {
+		
+		return this.zone.relays.filter(element => element._channels[0].ison).length > 0;
 		return this.mode === 0 ?
 			(this.sensor.temperature.value < this.schedule.temperature - this.temperature.threshold) :
 			(this.sensor.temperature.value > this.schedule.temperature + this.temperature.threshold);

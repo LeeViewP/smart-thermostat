@@ -1,7 +1,9 @@
 const Relay = require("./relay");
+const request = require('request-promise-native');
 class Shelly1 extends Relay {
     constructor(id, ip) {
         super(id, ip, 1);
+        this.getStatus();
     }
 
     turnOn(delay) {
@@ -22,10 +24,29 @@ class Shelly1 extends Relay {
         this.callUri(url);
         this.getStatus();
     }
-    getStatus() {
+    async getStatus() {
         super.getStatus();
         var url = this.url + "/status/";
-        this._status = super.callUri(url);
+        let re = await this.callUri(url);//.then(response=> this._status = response);
+
+        await request({ uri: url, json: true })
+            .then(response => {
+                // console.info(`response for relay id:${this._id} url:" ${url}" ${JSON.stringify(response)} `);
+                this.channels[0] = { ison : response.relays[0].ison };
+                this._status = response
+            })
+            .catch(err => console.error(`Error calling relay id:${this._id} url:" ${url}" ${err}.`));
+
+        // await  Promise.resolve(this.callUri(url)).then
+        // (result=> 
+        //     this._status = result );
+        // let result = await promise; 
+        // let promise = new Promise((res, rej) => {
+        //     res(super.callUri(url));
+        // });
+        // let result = await promise;
+        // this._status = await promise;
+        // this._status = super.callUri(url);
 
         // Promise.resolve(this.callUri(url)).then(
         //     response => {
@@ -54,7 +75,10 @@ class Shelly1 extends Relay {
         // }
 
     }
-    get isOn() { this.getStatus(); return this.channels[0].ison };
+    get isOn() {
+        // await this.getStatus();
+        return this.channels[0].ison
+    };
 };
 
 module.exports = Shelly1;

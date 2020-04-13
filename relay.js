@@ -1,4 +1,6 @@
-const request = require('request');
+// const request = require('request');
+const request = require('request-promise-native');
+
 module.exports = class Relay {
     constructor(id, ip, channelsNo) {
         this._id = id;
@@ -25,13 +27,18 @@ module.exports = class Relay {
     }
 
     callUri(uri) {
-        request(uri, { json: true }, (err, res, body) => {
-            if (err) { return console.log(`Error calling relay id:${this._id} url:" ${uri}".`) }
-            if (res.statusCode === 200) {
-                console.log(`Successfull called relay id:${this._id} url:" ${uri}".`);
-                return body;
-            }
-        });
+        request({ uri: uri, json: true })
+            .then(response => {
+                // console.log(`Succesfuly called relay id:${this._id} url:" ${uri}" ${JSON.stringify(response)}.`); 
+                return response;})
+            .catch(err => console.log(`Error calling relay id:${this._id} url:" ${uri}" ${err}.`));
+        // request(uri, { json: true }, (err, res, body) => {
+        //     if (err) { return console.log(`Error calling relay id:${this._id} url:" ${uri}".`) }
+        //     if (res.statusCode === 200) {
+        //         console.log(`Successfull called relay id:${this._id} url:" ${uri}".`);
+        //         return body;
+        //     }
+        // });
     }
 
     get id() { return this._id; }

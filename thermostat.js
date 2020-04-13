@@ -44,7 +44,7 @@ const convertZoneFactory = (offset) => (zone) => ({
     name: zone.name,
     sensor: sensors.map(sn => {
         let sensorClone = JSON.parse(JSON.stringify({ ...sn }));
-        sensorClone.temperature.value += offset.temperature;
+        sensorClone.temperature.value = Number(parseFloat(sensorClone.temperature.value + offset.temperature).toFixed(2));
         sensorClone.humidity.value += offset.humidity;
         return sensorClone;
     }).find(s => s.id === zone.sensor.id),
@@ -182,7 +182,12 @@ app.get('/sensors', (req, res) => {
 app.post('/sensors', (req, res) => {
     var foundSensor = sensors.filter(s => s.id === req.body.id)[0];
     if (!foundSensor) sensors.push({ ...req.body });
-    else sensors.splice(sensors.indexOf(foundSensor), 1, { ...foundSensor, ...req.body });
+    else {
+        if (req.body.temperature) {
+            req.body.temperature.lastValue = foundSensor.temperature.value;
+        }
+        sensors.splice(sensors.indexOf(foundSensor), 1, { ...foundSensor, ...req.body });
+    }
     jsonFile.writeJSONFile(`${datafolderPath}/sensors.json`, sensors);
     res.status(201).end()
 });
@@ -281,15 +286,27 @@ function processTemperature() {
     buildActiveZones().forEach(activeZone => {
         //Heat Mode
         if (activeZone.mode === 0) {
-            // var targetTemperature = activeZone.interval.temperature + settings.temperature.threshold; Number(parseFloat(newTemp).toFixed(2));
-            var minTargetTemperature = Number(parseFloat(activeZone.interval.temperature - settings.temperature.threshold).toFixed(2));
-            var maxTargetTemperature = Number(parseFloat(activeZone.interval.temperature + settings.temperature.threshold).toFixed(2));
-            // if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
-            if (activeZone.zone.sensor.temperature.value < minTargetTemperature || activeZone.zone.sensor.temperature.value < activeZone.interval.temperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            let heatIsNeeded = needForHeat(temperatureDiff(activeZone.interval.temperature, activeZone.zone.sensor.temperature.value));
+            let heatWasNeeded = needForHeat(temperatureDiff(activeZone.interval.temperature, activeZone.zone.sensor.temperature.lastValue));
+            if (heatIsNeeded || heatWasNeeded) {
+                activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            }
+            console.info(`Heat Mode set for : ${activeZone.id}-${activeZone.zone.name} Heat is needed: ${heatIsNeeded} and Heat was needed  ${heatWasNeeded} current temperature: ${activeZone.zone.sensor.temperature.value} set Temperature :${activeZone.interval.temperature}`);
 
-            console.info(`Heat Mode set for : ${activeZone.id}-${activeZone.zone.name} between: ${minTargetTemperature} and ${maxTargetTemperature} current temperature: ${activeZone.zone.sensor.temperature.value}`);
-            // if (activeZone.zone.sensor.temperature.value > targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
-            // else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            // if (needForHeat(temperatureDiff(activeZone.interval.temperature, activeZone.zone.sensor.temperature.value)))
+            //     activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            // // // var targetTemperature = activeZone.interval.temperature + settings.temperature.threshold; Number(parseFloat(newTemp).toFixed(2));
+            // // var minTargetTemperature = Number(parseFloat(activeZone.interval.temperature - settings.temperature.threshold).toFixed(2));
+            // // var maxTargetTemperature = Number(parseFloat(activeZone.interval.temperature + settings.temperature.threshold).toFixed(2));
+            // // // if (activeZone.zone.sensor.temperature.value > maxTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
+            // // if (activeZone.zone.sensor.temperature.value < minTargetTemperature) activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+            // // if (activeZone.zone.sensor.temperature.value >= minTargetTemperature && activeZone.zone.sensor.temperature.value < activeZone.interval.temperature) {
+            // //     // is between intervals let us see whart we do here 
+            // //     activeZone.zone.relays.forEach(relay => { if (relay.isOn) tOn.push(relay); });
+            // // }
+            // // console.info(`Heat Mode set for : ${activeZone.id}-${activeZone.zone.name} between: ${minTargetTemperature} and ${maxTargetTemperature} current temperature: ${activeZone.zone.sensor.temperature.value}`);
+            // // if (activeZone.zone.sensor.temperature.value > targetTemperature) activeZone.zone.relays.forEach(relay => { if (tOff.indexOf(relay) === -1) tOff.push(relay) });
+            // // else activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
         }
 
         //Cool Mode
@@ -307,6 +324,24 @@ function processTemperature() {
         }
     });
     // tOff.filter(r => tOn.indexOf(r) < 0).forEach(t => t.turnOff());//.filter(r => r.isOn)
-    tOn.filter(r => !r.isOn).forEach(t => t.turnOn(10 * 60));
+    tOn.forEach(t => t.turnOn(10 * 60)); //.filter(r => !r.isOn)
     console.info(`Stop processing temperature`);
+}
+
+// function temperatureDiff(targetTemperature, currentTemperature){
+//     return Number.parseFloat(Number.parseFloat(targetTemperature).toFixed(2) - Number.parseFloat(currentTemperature).toFixed(2)  ).toFixed(2);
+// }
+const temperatureDiff = (targetTemperature, currentTemperature) =>
+    Number(Number(parseFloat(targetTemperature).toFixed(2)) - Number(parseFloat(currentTemperature).toFixed(2)));
+
+const needForHeat = (temperature) => temperature > settings.temperature.threshold;
+const isTemperatureRising = (temperature) => temperatureDiff(temperature.value, temperature.lastValue) > 0;
+const isNeedForHeat = (targetTemperature, temperature) => {
+    var currentTempDiff = temperatureDiff(targetTemperature, temperature.value);
+    var lastTempDiff = temperatureDiff(targetTemperature, temperature.lastValue);
+    var currentNeedForHeat = needForHeat(currentTempDiff);
+    var lastNeedFOrHeat = needForHeat(lastTempDiff);
+    var isRising = isTemperatureRising(temperature)
+    return currentNeedForHeat || lastNeedFOrHeat;
+    return temperatureDiff(targetTemperature, temperature.value) >= temperatureDiff(targetTemperature, temperature.lastValue)
 }

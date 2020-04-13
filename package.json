@@ -17,9 +17,10 @@
     "angular-material": "^1.1.21",
     "angular-messages": "^1.7.9",
     "body-parser": "^1.19.0",
+    "console-stamp": "^0.2.7",
     "express": "^4.17.1",
     "request": "^2.88.0",
-    "roboto-fontface": "^0.10.0",
-    "console-stamp": "^0.2.7"
+    "request-promise-native": "^1.0.8",
+    "roboto-fontface": "^0.10.0"
   }
 }
