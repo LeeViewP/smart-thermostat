@@ -3,7 +3,11 @@
 		<md-card-title-text>
 			<div class="md-headline" layout="row">
 				<md-icon flex="10" class="md-primary" md-svg-icon="{{$ctrl.modeIcon[$ctrl.mode]}}"></md-icon> 
-				<span flex md-truncate>{{::$ctrl.sensor.id}}</span>
+				<span flex md-truncate>{{::$ctrl.sensor.name}}</span>
+			</div>
+			<div class="md-caption" layout="row">
+				<md-icon flex="10" class="md-primary" md-svg-icon=""></md-icon>
+				<span flex md-truncate>{{::$ctrl.sensor.externalId}}</span>
 			</div>
 		</md-card-title-text>
 	</md-card-title>

@@ -13,7 +13,7 @@ export const thZonesRoutesConfig = ['$stateProvider', function ($stateProvider) 
 		},
 		resolve: {
 			activeZones: ['$http', ($http) => $http.get('/status').then(r =>r.data)],
-			settingsThermostat: ['$http', ($http) => $http.get('settings/thermostat').then(result => result.data)]
+			settingsThermostat: ['$http', ($http) => $http.get('/thermostat').then(result => result.data)]
 		}
 	});
 }];

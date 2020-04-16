@@ -14,7 +14,7 @@ class ThModeComponentController {
 	changeMode(newMode) {
 		if(newMode === this.thermostat.mode) return;
 		const thermostat = { ...this.thermostat, mode: newMode };
-		this.$http.post('settings', { thermostat }).then(() => this.$state.reload());
+		this.$http.post('thermostat',  thermostat ).then(() => this.$state.reload());
 	}
 }
 export const thModesComponentName = 'thModes';

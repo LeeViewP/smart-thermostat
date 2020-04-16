@@ -4,8 +4,8 @@
 		 layout-align-xs="start start">
 	<md-button 	data-ng-repeat="mode in $ctrl.modes track by mode.mode" 
 				data-ng-disabled="!mode.isEnabled" 
-				data-ng-class="{ 'md-primary': mode.mode === $ctrl.thermostat.mode } " 
-				data-ng-click="$ctrl.changeMode(mode.mode)"
+				data-ng-class="{ 'md-primary': mode.mode === $ctrl.thermostat.mode.mode } " 
+				data-ng-click="$ctrl.changeMode(mode)"
 				layout="column"
 				flex="shrink"
 				flex-md="none"

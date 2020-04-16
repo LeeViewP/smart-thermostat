@@ -7,27 +7,30 @@
 			</div>
 			<div class="md-caption" layout="row">
 				<md-icon flex="10" class="md-primary" md-svg-icon=""></md-icon>
-				<span flex md-truncate>{{::$ctrl.room.id}}</span>
+				<span flex md-truncate>{{::$ctrl.room.externalId}}</span>
 			</div>
 		</md-card-title-text>
 	</md-card-title>
 	<md-card-content>
 		<div class="md-body-2" layout="row">
-			<div flex="10" layout="row">
+			<div flex="10" layout="column">
 				<md-icon md-svg-icon="temperature" layut="row" class="md-primary"></md-icon>
 			</div>
-			<div flex="90" layout="row" md-truncate>
-				{{::$ctrl.room.sensor.id}}
+			<div flex="90" layout="column" md-truncate>
+				<section flex data-ng-repeat="sensor in $ctrl.room.sensors track by sensor._id" data-sensor="sensor"layout-padding>
+					{{sensor._id}}
+				</section>
+				<!-- {{::$ctrl.room.sensor._id}} -->
 			</div>
 		</div>
 		<div class="md-body-2" layout="row">
-			<div flex="10" layout="row">
+			<div flex="10" layout="column">
 				<md-icon md-svg-icon="switch" layut="row" class="md-primary"></md-icon>
 			</div>
-			<div flex="90" layout="row" md-truncate>
-				<section flex data-ng-repeat="relay in $ctrl.room.relays track by relay.id" data-relay="relay"
+			<div flex="90" layout="column" md-truncate>
+				<section flex data-ng-repeat="relay in $ctrl.room.relays track by relay._id" data-relay="relay"
 					layout-padding>
-					{{relay.id}}
+					{{relay._id}}
 				</section>
 			</div>
 		</div>

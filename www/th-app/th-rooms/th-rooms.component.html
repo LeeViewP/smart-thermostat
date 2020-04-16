@@ -1,6 +1,6 @@
 <md-content ui-view>
 	<section data-ng-if="$ctrl.activeRooms.length > 0" layout="column" layout-gt-md = "row">
-		<th-room flex data-ng-repeat="activeRoom in $ctrl.activeRooms track by activeRoom.id" data-room="activeRoom" layout-padding></th-room>
+		<th-room flex data-ng-repeat="activeRoom in $ctrl.activeRooms track by activeRoom._id" data-room="activeRoom" layout-padding></th-room>
 	  </section>
 	  <section data-ng-if="$ctrl.activeRooms.length < 1">
 		<h2 class="md-flex"  flex layout="row" layout-align="center center">There is no room defined!</h2>

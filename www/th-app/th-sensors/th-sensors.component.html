@@ -1,6 +1,6 @@
 <md-content>
 	<section data-ng-if="$ctrl.activeSensors.length > 0" layout="column" layout-gt-md = "row">
-		<th-sensor flex data-ng-repeat="activeSensor in $ctrl.activeSensors track by activeSensor.id" data-sensor="activeSensor" layout-padding></th-zone>
+		<th-sensor flex data-ng-repeat="activeSensor in $ctrl.activeSensors track by activeSensor._id" data-sensor="activeSensor" layout-padding></th-zone>
 	  </section>
 	  <section data-ng-if="$ctrl.activeSensors.length < 1">
 		<h2 class="md-flex"  flex layout="row" layout-align="center center">No sensors found!</h2>

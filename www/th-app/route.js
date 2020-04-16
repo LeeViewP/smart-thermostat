@@ -1,7 +1,12 @@
 export const routesConfig = [
 	'$stateProvider', 
-	'$urlRouterProvider',
-	function ($stateProvider, $urlRouterProvider) {
+	'$urlRouterProvider','$locationProvider',
+	function ($stateProvider, $urlRouterProvider,$locationProvider) {
+		// $locationProvider.html5Mode({
+		// 	enabled: true,
+		// 	requireBase: false
+		//   });
+		// $locationProvider.hashPrefix('');
 		$urlRouterProvider.when('', '/app');
 		$stateProvider.state({
 			astract: true,
