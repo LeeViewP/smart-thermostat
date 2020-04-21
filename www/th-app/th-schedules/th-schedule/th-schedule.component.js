@@ -10,7 +10,8 @@ class ThScheduleController {
 	}
 	$onInit() {
 
-		this.id = this.scheduleData.id;
+		this.id = this.scheduleData._id;
+		this.name=this.scheduleData.name;
 		this.schedules = this.scheduleData.schedule;		
 	}
 	delete = function (ev) {

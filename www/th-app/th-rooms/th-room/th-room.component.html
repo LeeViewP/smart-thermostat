@@ -7,7 +7,7 @@
 			</div>
 			<div class="md-caption" layout="row">
 				<md-icon flex="10" class="md-primary" md-svg-icon=""></md-icon>
-				<span flex md-truncate>{{::$ctrl.room.externalId}}</span>
+				<span flex md-truncate>{{::$ctrl.room._id}}</span>
 			</div>
 		</md-card-title-text>
 	</md-card-title>
@@ -28,8 +28,7 @@
 				<md-icon md-svg-icon="switch" layut="row" class="md-primary"></md-icon>
 			</div>
 			<div flex="90" layout="column" md-truncate>
-				<section flex data-ng-repeat="relay in $ctrl.room.relays track by relay._id" data-relay="relay"
-					layout-padding>
+				<section flex data-ng-repeat="relay in $ctrl.room.relays track by relay._id" data-relay="relay"	layout-padding>
 					{{relay._id}}
 				</section>
 			</div>
