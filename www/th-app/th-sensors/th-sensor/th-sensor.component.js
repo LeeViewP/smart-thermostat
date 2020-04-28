@@ -21,7 +21,7 @@ class ThSensorController {
 			.ok('Delete')
 			.cancel('Cancel');
 		const http = this.$http;
-		const id=this.sensor.id;
+		const id=this.sensor._id;
 		const $state= this.$state;
 		this.$mdDialog
 			.show(dialog)

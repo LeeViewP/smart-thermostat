@@ -14,4 +14,9 @@ export const iconsConfig = ['$mdIconProvider', function ($mdIconProvider) {
 	$mdIconProvider.icon('temperature', 'img/icons/thermometer-lines.svg', 24);
 	$mdIconProvider.icon('humidity', 'img/icons/water-percent.svg', 24);
 	$mdIconProvider.icon('timer', 'img/icons/timer.svg', 24);
+	$mdIconProvider.icon('plus', 'img/icons/plus.svg', 24);
+	$mdIconProvider.icon('minus', 'img/icons/minus.svg', 24);
+	$mdIconProvider.icon('schedules', 'img/icons/calendar-clock.svg', 24);
+	$mdIconProvider.icon('plane', 'img/icons/airplane-takeoff.svg', 24);
+	$mdIconProvider.icon('dashboard', 'img/icons/view-dashboard.svg', 24);
 }];

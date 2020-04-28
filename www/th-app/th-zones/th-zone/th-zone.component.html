@@ -1,52 +1,89 @@
 <md-card md-whiteframe="3">
-	<md-card-title>	
+	<img ng-src="{{::$ctrl.zoneImageUrl}}" class="md-card-image" alt="Washed Out">
+	<md-card-title>
 		<md-card-title-text>
 			<div class="md-headline" layout="row">
-				<md-icon flex="10" class="md-primary" md-svg-icon="{{$ctrl.modeIcon[$ctrl.mode]}}"></md-icon> 
+				<!-- <md-icon flex="10" class="md-primary" md-svg-icon="{{$ctrl.modeIcon[$ctrl.mode]}}"></md-icon> -->
 				<span flex md-truncate>{{::$ctrl.zone.name}}</span>
 			</div>
-			<div class="md-subhead" layout="row">
-				<md-icon flex="10" 
-							md-svg-icon="scheduled"
-							class="md-hue-2" 
-							data-ng-class="{'md-primary': $ctrl.sensorShouldBeActive }"></md-icon> 
+			<!-- <div class="md-subhead" layout="row">
+				<md-icon flex="10" md-svg-icon="scheduled" class="md-hue-2"
+					data-ng-class="{'md-primary': $ctrl.sensorShouldBeActive }"></md-icon>
 				<div flex="90">
-					<span> {{::$ctrl.schedule.start | thMinutesToHumanisedString}} -  {{::$ctrl.schedule.end | thMinutesToHumanisedString}}</span>
+					<span> {{::$ctrl.schedule.start | thMinutesToHumanisedString}} -
+						{{::$ctrl.schedule.end | thMinutesToHumanisedString}}</span>
 				</div>
-			</div>
+			</div> -->
 		</md-card-title-text>
-		<md-card-title-media flex-offset="5">
+		<!-- <md-card-title-media flex-offset="5">
 			<div class="md-media-md card-media" style="background: url(); background-size: cover">
 				<img ng-src="{{::$ctrl.zoneImageUrl}}">
 			</div>
-		</md-card-title-media>
+		</md-card-title-media> -->
 	</md-card-title>
 	<md-card-content>
-		<div class="md-display-1" layout="row">
+		<div flex layout="row" layout-align="start center" data-ng-if="$ctrl.canChangeTemperature()">
+			<md-icon flex="10" class="md-primary" md-svg-icon="{{$ctrl.modeIcon[$ctrl.mode]}}"
+				data-ng-class="{'md-warn': $ctrl.sensorShouldBeActive() }"></md-icon>
+			<div flex="90">
+				<span>set to <span class="md-title"
+						data-ng-click="$ctrl.setManualTemperature($event)">{{$ctrl.schedule.temperature | number:2}}
+						{{::$ctrl.temperature.unit}}</span></span>
+			</div>
+		</div>
+		<div flex layout="row" layout-align="start center"data-ng-if="$ctrl.canChangeTemperature()">
+			<md-icon flex="10" class="md-primary" md-svg-icon="scheduled"></md-icon>
+			<div flex="90">
+				<span> between {{::$ctrl.schedule.start | thMinutesToHumanisedString}} -
+					{{::$ctrl.schedule.end | thMinutesToHumanisedString}}</span>
+			</div>
+		</div>
+		<div flex layout="row" data-ng-if="$ctrl.sensor.temperature" layout-align="start center">
+			<md-icon flex="10" class="md-primary" md-svg-icon="thermometer"></md-icon>
+			<div flex="90">
+				<span> current {{::$ctrl.sensor.temperature.value | number:2}}{{::$ctrl.sensor.temperature.unit}}</span>
+			</div>
+
+		</div>
+		<div flex layout="row" data-ng-if="$ctrl.sensor.humidity" layout-align="start center">
+			<md-icon flex="10" class="md-primary" md-svg-icon="humidity"></md-icon>
+			<div flex="90">
+				<span> current {{::$ctrl.sensor.humidity.value | number:2}}{{::$ctrl.sensor.humidity.unit}} </span>
+			</div>
+		</div>
+		<div flex layout="row" layout-align="center center"  data-ng-if="$ctrl.canChangeTemperature()">
+			<md-slider-container flex>
+				<md-slider flex md-discrete ng-model-options="{  updateOn: 'mouseup touchend', debounce: 1000 }"
+					ng-model="$ctrl.schedule.temperature" min="5" max="40" step="0.5" round="2" class="md-primary">
+				</md-slider>
+			</md-slider-container>
+		</div>
+
+		<!-- <div class="md-display-1" layout="row">
 			<div flex="10" layout="row">
 				<md-icon md-svg-icon="thermometer" layut="row" class="md-primary s34"></md-icon>
 			</div>
-			<div flex="50"  layout="row" md-truncate>
+			<div flex="50" layout="row" md-truncate>
 				{{::$ctrl.sensor.temperature.value}}
 				{{::$ctrl.sensor.temperature.unit}}
 			</div>
-			<div flex="30"  layout="row" layout-align="end center" class="md-title" data-ng-click="$ctrl.setManualTemperature($event)">
+			<div flex="30" layout="row" layout-align="end center" class="md-title"
+				data-ng-click="$ctrl.setManualTemperature($event)">
 				{{$ctrl.schedule.temperature}} {{::$ctrl.temperature.unit}}
 			</div>
-			<div flex="10"  layout="row">
-			<md-icon md-svg-icon="{{$ctrl.modeStatusIcon[$ctrl.mode]}}" 
-						class="md-hue-2 s20" 
-						data-ng-class="{'md-warn': $ctrl.sensorShouldBeActive() }"
-						data-ng-style="{'opacity': $ctrl.sensorShouldBeActive() ? 1 : 0.2}"></md-icon> 
+			<div flex="10" layout="row">
+				<md-icon md-svg-icon="{{$ctrl.modeStatusIcon[$ctrl.mode]}}" class="md-hue-2 s20"
+					data-ng-class="{'md-warn': $ctrl.sensorShouldBeActive() }"
+					data-ng-style="{'opacity': $ctrl.sensorShouldBeActive() ? 1 : 0.2}"></md-icon>
 			</div>
-		</div>
-	<md-card-content>
-	<md-card-actions layout="row" layout-align-gt-xs="end center" layout-align="center center">
-		<md-button class="md-whiteframe-3dp" data-ng-click="$ctrl.changeTemperature(0.1)">
-			<md-icon md-svg-icon="up" layut="row"></md-icon>
-		</md-button>
-		<md-button class="md-whiteframe-3dp" data-ng-click="$ctrl.changeTemperature(-0.1)">
-			<md-icon md-svg-icon="down" layut="row"></md-icon>
-		</md-button>
-	</md-card-actions>
+		</div> -->
+		<md-card-content>
+			<md-card-actions layout="row" layout-align="center center" data-ng-if="$ctrl.canChangeTemperature()">
+				<md-button class="md-whiteframe-1dp" data-ng-click="$ctrl.changeTemperature(0.1)">
+					<md-icon md-svg-icon="plus" layut="row"></md-icon>
+				</md-button>
+				<md-button class="md-whiteframe-1dp" data-ng-click="$ctrl.changeTemperature(-0.1)">
+					<md-icon md-svg-icon="minus" layut="row"></md-icon>
+				</md-button>
+			</md-card-actions>
 </md-card>

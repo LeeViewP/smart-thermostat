@@ -2,6 +2,9 @@
 	<div class="md-toolbar-tools">
 		<md-icon flex="5" md-svg-icon="{{$ctrl.icon}}" layut="row" data-ng-if="$ctrl.icon"></md-icon>
 		<h2 flex md-truncate data-ng-click="$ctrl.openMenu()">{{$ctrl.Name}}</h2>
+		<section data-ng-repeat="button in $ctrl.buttons">
+			<md-button ui-sref ="{{button.sref||undefined}}" data-ng-click="{button.click}">{{button.name}}</md-button>
+		</section>
 		<!-- <md-button class="md-icon-button" aria-label="Zone" ng-disabled="false" data-ng-if="false">
 		<md-icon md-svg-icon="thermostat" layut="row"></md-icon>
 		</md-button>

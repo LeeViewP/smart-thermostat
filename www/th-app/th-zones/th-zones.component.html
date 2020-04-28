@@ -1,6 +1,6 @@
 <md-content layout="column" layout-gt-xs-padding layout-fill>
   <md-subheader class="no-padding">
-    <th-modes data-thermostat="$ctrl.settingsThermostat"></th-modes>
+    <th-modes data-thermostat="$ctrl.thermostat", data-modes="$ctrl.settingsModes"></th-modes>
     <md-divider></md-divider>
   </md-subheader>
   <section data-ng-if="$ctrl.activeZones.length > 0" layout="column" layout-gt-md = "row">

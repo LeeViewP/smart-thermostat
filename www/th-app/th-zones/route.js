@@ -5,7 +5,7 @@ export const thZonesRoutesConfig = ['$stateProvider', function ($stateProvider) 
 		component: 'thZones',
 		data: {
 			name: 'Dashboard',
-			icon: 'thermostat',
+			icon: 'dashboard',
 			menuPosition: 100
 		},
 		bindings: {
@@ -13,7 +13,8 @@ export const thZonesRoutesConfig = ['$stateProvider', function ($stateProvider) 
 		},
 		resolve: {
 			activeZones: ['$http', ($http) => $http.get('/status').then(r =>r.data)],
-			settingsThermostat: ['$http', ($http) => $http.get('/thermostat').then(result => result.data)]
+			thermostat: ['$http', ($http) => $http.get('/thermostat').then(result => result.data)],
+			settingsModes: ['$http', ($http) => $http.get('/settings/modes').then(r =>r.data)],
 		}
 	});
 }];

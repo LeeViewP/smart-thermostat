@@ -1,0 +1,45 @@
+<md-content layout-padding>
+    <!-- <h1 style="color:red;">I am the bloody ROOM Edit State TEMPLATE! Piss off! {{$ctrl.roomId}}</h1>
+    <pre>{{$ctrl.room}}</pre> -->
+    <md-input-container class="md-block">
+        <label>Name</label>
+        <input ng-model="$ctrl.room.name">
+    </md-input-container>
+    <span class="md-body-1">{{$ctrl.room._id}}</span>
+    <!-- <md-input-container class="md-block">
+        <label>Id</label>
+        <input ng-model="$ctrl.room._id" disabled>
+      </md-input-container> -->
+    <md-divider></md-divider>
+    <!-- <pre>{{$ctrl.sensors}}</pre> -->
+    <md-list flex>
+        <md-subheader class="md-no-sticky">
+            <md-icon md-svg-icon="temperature" class="md-primary"></md-icon> Sensors
+        </md-subheader>
+        <md-list-item ng-repeat="sensor in $ctrl.sensors track by sensor._id" class="md-2-line">
+            <div class="md-list-item-text">
+                <h3>{{ sensor.name }}</h3>
+                <p>{{ sensor._id }}</p>
+            </div>
+            <md-checkbox class="md-secondary" ng-model="sensor.isThere"></md-checkbox>
+        </md-list-item>
+    </md-list>
+    <md-divider></md-divider>
+    <!-- <pre>{{$ctrl.relays}}</pre> -->
+    <md-list flex>
+        <md-subheader class="md-no-sticky">
+            <md-icon md-svg-icon="switch" class="md-primary"></md-icon> Relays
+        </md-subheader>
+        <md-list-item ng-repeat="relay in $ctrl.relays track by relay._id" class="md-2-line">
+            <div class="md-list-item-text">
+                <h3>{{ relay.externalId }}</h3>
+                <p>{{ relay._id }}</p>
+            </div>
+            <md-checkbox class="md-secondary" ng-model="relay.isThere"></md-checkbox>
+        </md-list-item>
+    </md-list>
+    <md-divider></md-divider>
+    <section layout="row" layout-sm="column" layout-align="end center" layout-wrap>
+    <md-button data-ng-click="$ctrl.back()" ui-sref='^'>cancel</md-button>
+    <md-button class="md-accent" data-ng-click="$ctrl.save()" ui-sref='^'>save</md-button></section>
+</md-content>

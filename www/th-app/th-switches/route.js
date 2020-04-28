@@ -6,7 +6,13 @@ export const thSwitchesRoutesConfig = ['$stateProvider', function ($stateProvide
 		data: {
 			name: 'Switches',
 			icon: 'switch',
-			menuPosition: 300
+			menuPosition: 300,
+			buttons:[
+				{
+					name:"Add",
+					sref:"app.switches.switch({switchid:'new', switch: {name:'', _ip:''}})" 
+				}
+			]
 		}
 	});
 }];

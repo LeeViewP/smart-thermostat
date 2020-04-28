@@ -14,30 +14,36 @@
 	<md-card-content>
 		<div class="md-body-2" layout="row">
 			<div flex="10" layout="row">
-				<md-icon md-svg-icon="temperature" layut="row" class="md-primary"></md-icon>
-			</div>
-			<div flex="90"  layout="row" md-truncate>
-				{{::$ctrl.sensor.temperature.value}}
-				{{::$ctrl.sensor.temperature.unit}}
-			</div>
-		</div>
-		<div class="md-body-2" layout="row">
-			<div flex="10" layout="row">
-				<md-icon md-svg-icon="humidity" layut="row" class="md-primary"></md-icon>
-			</div>
-			<div flex="90"  layout="row" md-truncate>
-				{{::$ctrl.sensor.humidity.value}}
-				{{::$ctrl.sensor.humidity.unit}}
-			</div>
-		</div>
-		<div class="md-body-2" layout="row">
-			<div flex="10" layout="row">
 				<md-icon md-svg-icon="timer" layut="row" class="md-primary"></md-icon>
 			</div>
 			<div flex="90"  layout="row" md-truncate>
 				{{::$ctrl.sensor.updated  | date : 'medium' }}
 			</div>
 		</div>
+		<div class="md-body-2" layout="row">
+			<div flex="10" layout="row">
+				<md-icon md-svg-icon="temperature" layut="row" class="md-primary"></md-icon>
+			</div>
+			<div flex="90"  layout="row" md-truncate>
+				{{::$ctrl.sensor.temperature.value | number:2}}
+				{{::$ctrl.sensor.temperature.unit}}
+			</div>
+		</div>
+		<div class="md-body-2" layout="row" data-ng-if="$ctrl.sensor.humidity">
+			<div flex="10" layout="row">
+				<md-icon md-svg-icon="humidity" layut="row" class="md-primary"></md-icon>
+			</div>
+			<div flex="90"  layout="row" md-truncate>
+				{{::$ctrl.sensor.humidity.value | number:2}}
+				{{::$ctrl.sensor.humidity.unit}}
+			</div>
+		</div>
+		<div class="md-body-2" layout="row" data-ng-if="$ctrl.sensor.humidity===undefined">
+			<div flex="10" layout="row">
+				<md-icon md-svg-icon="" layut="row" class="md-primary"></md-icon>
+			</div>
+			</div>
+		
 	</md-card-content>
 	<md-card-actions layout="row" layout-align-gt-xs="end center" layout-align="center center">
 		<md-button data-ng-click="$ctrl.delete()">

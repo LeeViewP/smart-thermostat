@@ -35,7 +35,7 @@ const convertZoneFactory = (offset, sensors, relays) => (zone) => ({
         return sensorClone;
     }
     ).find(s => s._id === zs._id))
-        .reduce((rZone, minZone) => rZone.temperature.value < minZone.temperature.value ? rZone : minZone),
+        .reduce((rZone, minZone) => rZone.temperature.value < minZone.temperature.value  ? rZone : minZone),
     relays: zone.relays.map(zr => relays.find(r => r._id === zr._id)),
 })
 
@@ -149,9 +149,22 @@ app.post(['/relays', '/sensors', '/schedules', '/manual'], (req, res, next) => {
 });
 
 //#region Status
+app.get('/status/:controlzoneid', (req,res) =>{
+
+    Promise.resolve (new Promise((resolve, reject) =>
+    dbFindOne(db, { type: 'thermostat' }).then(doc => Promise.all(
+        doc.controlzones.filter(z => z.mode === detectThermostatMode(doc.mode.mode) && z.isenabled === true && z.id === req.params.controlzoneid).map(zone => buildActiveZone(zone))
+    ).then(zones => resolve(zones))))).then(docs => res.status(200).send(docs.map(doc => ({ ...doc, type: undefined }))))
+    .catch(error => { console.error(`Error in GET status ${error}`); res.status(500).end(); });
+    ;
+
+    // dbFind(db, { type: 'sensor', externalId: req.params.sensorid })
+    // .then(docs => res.status(200).send(docs.map(doc => ({ ...doc, type: undefined }))))
+    // .catch(error => { console.error(`Error in GET sensors ${error}`); res.status(500).end(); });
+})
 
 app.get('/status', async (req, res) => processActiveZones().then(result => res.status(200).send(result)).catch(error => { console.error(`Error in GET status ${error}`); res.status(500).end(); }));
-
+// app.get('status')
 //#endregion
 
 //#region Settings
@@ -160,16 +173,19 @@ app.post('/settings', (req, res) => {
     var obj = req.body;
     var settings = nconf.get('settings');
 
-    if (obj.temperature)
-        settings.temperature = { ...settings.temperature, ...obj.temperature }
+    if (obj.database)
+    settings.database = { ...settings.database, ...obj.database }
     if (obj.humidity)
         settings.humidity = { ...settings.humidity, ...obj.humidity }
-    if (obj.database)
-        settings.database = { ...settings.database, ...obj.database }
-    if (obj.timeProcessors)
-        settings.timeProcessors = { ...settings.timeProcessors, ...obj.timeProcessors }
+    if (obj.modes)
+        settings.modes = { ...settings.modes, ...obj.modes }
     if (obj.server)
         settings.server = { ...settings.server, ...obj.server }
+    if (obj.temperature)
+        settings.temperature = { ...settings.temperature, ...obj.temperature }
+    if (obj.timeProcessors)
+        settings.timeProcessors = { ...settings.timeProcessors, ...obj.timeProcessors }
+
 
     global.settings = settings;
     nconf.save(function (err) {
@@ -197,6 +213,8 @@ app.get('/settings/*', (req, res) => {
         return res.status(200).json(final);
     else return res.status(404).end();
 });
+
+app.post('/restart',(req,res)=>{console.info('Restart requested!'); process.exit();});
 //#endregion
 
 //#region Thermostat
@@ -206,13 +224,15 @@ app.get('/thermostat', (req, res) => dbFindOne(db, { type: 'thermostat' }).then(
 app.post('/thermostat', (req, res) => {
     var thermostat = { ...req.body, type: 'thermostat' };
     dbFindOne(db, { type: thermostat.type }).then(document => {
-        if (document == null) {
+        if (document === null) {
             db.insert(thermostat);
             res.status(201).end();
         }
         else {
-            db.update({ _id: document._id, type: thermostat.type }, { $set: { ...document, ...thermostat } }, {}, function (err, numReplaced) { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); });
-            res.status(201).end();
+            dbUpdate(db, { _id: document._id, type: thermostat.type }, { $set: { ...document, ...thermostat } }, {})
+                .then(numReplaced => { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); res.status(201).end(); });
+            // db.update({ _id: document._id, type: thermostat.type }, { $set: { ...document, ...thermostat } }, {}, function (err, numReplaced) { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); });
+            // res.status(201).end();
         }
         processTemperature();
     }).catch(error => { console.error(`Error in POST thermostat ${error}`); res.status(500).end(); });
@@ -225,13 +245,15 @@ app.post('/thermostat', (req, res) => {
 app.post('/manual', (req, res) => {
     var ovveride = { ...req.body, _id: req.body.id, id: undefined, type: 'override' };
     dbFindOne(db, { type: ovveride.type, _id: ovveride._id }).then(document => {
-        if (document == null) {
+        if (document === null) {
             db.insert(ovveride);
             res.status(201).end();
         }
         else {
-            db.update({ _id: document._id, type: ovveride.type }, { $set: { ...document, ...ovveride } }, {}, function (err, numReplaced) { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); });
-            res.status(201).end();
+            dbUpdate(db, { _id: document._id, type: ovveride.type }, { $set: { ...document, ...ovveride } }, {})
+            .then(numReplaced => { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); res.status(201).end(); });
+            // db.update({ _id: document._id, type: ovveride.type }, { $set: { ...document, ...ovveride } }, {}, function (err, numReplaced) { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); });
+            // res.status(201).end();
         }
         processTemperature();
     }).catch(error => { console.error(`Error in POST manual override ${error}`); res.status(500).end(); });
@@ -247,13 +269,13 @@ app.post('/relays', (req, res) => {
         return res.status(400).send('Missing ip ');
     var relay = { ...req.body, externalId: req.body.id, id: undefined, type: 'relay', _ip: req.body.ip || req.body._ip, ip: undefined, _url: req.body._url || `http://${req.body.ip || req.body._ip}` };
     dbFindOne(db, { type: relay.type, externalId: relay.externalId }).then(document => {
-        if (document == null) {
+        if (document === null) {
             db.insert(relay);
             res.status(201).end();
         }
         else {
-            db.update({ _id: document._id, type: relay.type }, { $set: { ...document, ...relay } }, {}, function (err, numReplaced) { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); });
-            res.status(201).end();
+            dbUpdate(db, { _id: document._id, type: relay.type }, { $set: { ...document, ...relay } }, {})
+                .then(numReplaced => { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); res.status(201).end(); });
         }
     }).catch(error => { console.error(`Error in POST relays ${error}`); res.status(500).end(); });
 });
@@ -261,7 +283,7 @@ app.post('/relays', (req, res) => {
 app.delete('/relays/:id', (req, res) => {
     dbFindOne(db, { type: 'relay', _id: req.params.id }).then(document => {
         if (document)
-            dbDelete(db, { _id: document._id, type: 'relay' },{})
+            dbDelete(db, { _id: document._id, type: 'relay' }, {})
                 .then(numDeleted => { console.info(`[${document._id}] DB-Removed: ${numDeleted}`); res.status(202).end(); })
         else res.status(404).end();
     });
@@ -271,20 +293,25 @@ app.delete('/relays/:id', (req, res) => {
 
 //#region Sensors
 
-app.get('/sensors', (req, res) => dbFind(db, { type: 'sensor' }).then(docs => res.status(200).send(docs.map(doc => ({ ...doc, type: undefined })))).catch(error => { console.error(`Error in GET sensors ${error}`); res.status(500).end(); }));
+app.get('/sensors/:sensorid', (req,res) =>{
+    dbFind(db, { type: 'sensor', externalId: req.params.sensorid })
+    .then(docs => res.status(200).send(docs.map(doc => ({ ...doc, type: undefined }))))
+    .catch(error => { console.error(`Error in GET sensors ${error}`); res.status(500).end(); });
+})
 
+app.get('/sensors', (req, res) => dbFind(db, { type: 'sensor' }).then(docs => res.status(200).send(docs.map(doc => ({ ...doc, type: undefined })))).catch(error => { console.error(`Error in GET sensors ${error}`); res.status(500).end(); }));
 
 app.post('/sensors', (req, res) => {
     var sensor = { ...req.body, externalId: req.body.id, id: undefined, type: 'sensor' };
     dbFindOne(db, { type: sensor.type, externalId: sensor.externalId }).then(document => {
-        if (document == null) {
+        if (document === null) {
             db.insert(sensor);
             res.status(201).end();
         }
         else {
-            sensor.temperature.lastValue = document.temperature.value;
-            db.update({ _id: document._id, type: sensor.type }, { $set: { ...document, ...sensor } }, {}, function (err, numReplaced) { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); });
-            res.status(201).end();
+            if (document.temperature && document.temperature.value) sensor.temperature.lastValue = document.temperature.value;
+            dbUpdate(db, { _id: document._id, type: sensor.type }, { $set: { ...document, ...sensor } }, {})
+                .then(numReplaced => { console.info('   [' + document._id + '] DB-Updates:' + numReplaced); res.status(201).end(); });
         }
     }).catch(error => { console.error(`Error in POST sensors ${error}`); res.status(500).end(); });
 });
@@ -292,15 +319,10 @@ app.post('/sensors', (req, res) => {
 app.delete('/sensors/:id', (req, res) => {
     dbFindOne(db, { type: 'sensor', _id: req.params.id }).then(document => {
         if (document)
-            dbDelete(db, { _id: document._id, type: 'sensor' },{})
+            dbDelete(db, { _id: document._id, type: 'sensor' }, {})
                 .then(numDeleted => { console.info(`[${document._id}] DB-Removed: ${numDeleted}`); res.status(202).end(); });
         else res.status(404).end();
     });
-});
-
-app.get('/sensors/:id', (req, res) => {
-    var foundSensor = sensors.filter(s => s.id === req.params.id)[0];
-    return helpers.responseReturn(req, res, foundSensor);
 });
 
 //#endregion
@@ -317,7 +339,13 @@ app.get('/schedules/:id', (req, res) => {
 //#endregion
 
 //#region Zones
-app.get('/zones', (req, res) => {
+app.get('/zones/:id', (req, res) => {
+    dbFind(db, { type: 'zone', _id: req.params.id })
+    .then(docs => res.status(200).send(docs.map(doc => ({ ...doc, type: undefined }))))
+    .catch(error => { console.error(`Error in GET sensors ${error}`); res.status(500).end(); });
+})
+
+    app.get('/zones', (req, res) => {
     db.find({ type: 'zone' }, function (err, docs) {
         res.status(200).send(docs.map(doc => ({ ...doc, type: undefined, })));
     })
@@ -325,14 +353,15 @@ app.get('/zones', (req, res) => {
 
 //{"type":"zone","_id":"35C1EC41-6462-47A2-8ED6-14F488831D5F","name":"zone 1","relays":[{"_id":"tp3WJPthdHUYnnlv"}],"sensors":[{"_id":"0QxDDBtfKkuy1lpk"}]}
 app.post('/zones', (req, res) => {
+    // if (!req.body._id) 
     var zone = { ...req.body, type: 'zone' }
     dbFindOne(db, { type: zone.type, _id: zone._id }).then(document => {
-        if (document == null) {
-            dbInsert(zone)
-                .then(dc => { console.info(`[${document._id}] DB-Inserted: ${dc}`); res.status(201).end(); });
+        if (document === null) {
+            dbInsert(db,{...zone, _id:undefined})
+                .then(dc => { console.info(`[${dc._id}] DB-Inserted: ${JSON.stringify(dc)}`); res.status(201).end(); });
         }
         else {
-            dbUpdate({ _id: document._id, type: zone.type }, { $set: { ...document, ...zone } }, {})
+            dbUpdate(db, { _id: document._id, type: zone.type }, { $set: { ...document, ...zone } }, {})
                 .then(nr => { console.info(`[${document._id}] DB-Updates: ${nr}`); res.status(201).end(); })
         }
     }).catch(error => { console.error(`Error in POST zones ${error}`); res.status(500).end(); });
@@ -341,7 +370,7 @@ app.post('/zones', (req, res) => {
 app.delete('/zones/:id', (req, res) => {
     dbFindOne(db, { type: 'zone', _id: req.params.id }).then(document => {
         if (document)
-            dbDelete(db, { _id: document._id, type: 'zone' },{})
+            dbDelete(db, { _id: document._id, type: 'zone' }, {})
                 .then(numDeleted => { console.info(`[${document._id}] DB-Removed: ${numDeleted}`); res.status(202).end(); })
         else res.status(404).end();
     });
@@ -400,7 +429,7 @@ buildActiveZone = (controlZone) =>
             var currentInterval = { start: interval.from, temperature: interval.interval.temperature, end: interval.to };
             overrideFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(currentInterval.start / 60), currentInterval.start % 60);
             overrideTo = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(currentInterval.end / 60), currentInterval.end % 60);
-            var override = elements.filter(s => s.type == 'override').filter(override => new Date(override.updated) >= overrideFrom && new Date(override.updated) <= overrideTo && override._id === controlZone.id).sort((a, b) => b.updated - a.updated)[0];
+            var override = elements.filter(s => s.type === 'override').filter(override => new Date(override.updated) >= overrideFrom && new Date(override.updated) <= overrideTo && override._id === controlZone.id).sort((a, b) => b.updated - a.updated)[0];
             if (override && override.temperatureOverride) currentInterval.temperature = override.temperatureOverride;
             let activeZone =
             {
@@ -428,13 +457,20 @@ processTemperature = () =>
         activezones.forEach(activeZone => {
             //Heat Mode
             if (activeZone.mode === 0) {
-                let heatIsNeeded = needForHeat(temperatureDiff(activeZone.interval.temperature, activeZone.zone.sensor.temperature.value));
-                let heatWasNeeded = needForHeat(temperatureDiff(activeZone.interval.temperature, activeZone.zone.sensor.temperature.lastValue));
-                if (heatIsNeeded || heatWasNeeded) {
-                    activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+                if (activeZone.zone.sensor) {
+                    let heatIsNeeded = needForHeat(temperatureDiff(activeZone.interval.temperature, activeZone.zone.sensor.temperature.value));
+                    let heatWasNeeded = needForHeat(temperatureDiff(activeZone.interval.temperature, activeZone.zone.sensor.temperature.lastValue));
+                    if (heatIsNeeded || heatWasNeeded) {
+                        activeZone.zone.relays.forEach(relay => { if (tOn.indexOf(relay) === -1) tOn.push(relay); });
+                    }
+                    console.info(`Heat Mode set for : ${activeZone.id}-${activeZone.zone.name} Heat is needed: ${heatIsNeeded} and Heat was needed  ${heatWasNeeded} current temperature: ${activeZone.zone.sensor.temperature.value} set Temperature :${activeZone.interval.temperature}`);
                 }
-                console.info(`Heat Mode set for : ${activeZone.id}-${activeZone.zone.name} Heat is needed: ${heatIsNeeded} and Heat was needed  ${heatWasNeeded} current temperature: ${activeZone.zone.sensor.temperature.value} set Temperature :${activeZone.interval.temperature}`);
+                else {
+                    console.info(`No need for temperature calculation for ${activeZone.id}-${activeZone.zone.name}`);
+                }
             }
+
+
             //Cool Mode
             if (activeZone.mode === 1) {
                 var minTargetTemperature = Number(parseFloat(activeZone.interval.temperature - settings.temperature.threshold).toFixed(2));
@@ -450,6 +486,9 @@ processTemperature = () =>
             }
         });
         tOn.forEach(t => t.turnOn(10 * 60)); //.filter(r => !r.isOn)
+        // Promise.all( tOn.map(t => { t.getStatus(); return t._status;})).then(result => {
+        //     console.info(`status: ${JSON.stringify(result)}`);
+        // })
         console.info(`Stop processing temperature`);
     }
     ).catch(err => console.error(`Process temperature failed :${err}`));
@@ -620,9 +659,9 @@ dbFind = (database, query) =>
             }
         })
     );
-dbUpdate = (database, query, value, options) =>
+dbUpdate = (database, query, update, options) =>
     new Promise((resolve, reject) =>
-        database.update(query, { $set: value }, options, (error, numReplaced) => {
+        database.update(query, update, options, (error, numReplaced) => {
             if (error) {
                 reject(error)
             } else {

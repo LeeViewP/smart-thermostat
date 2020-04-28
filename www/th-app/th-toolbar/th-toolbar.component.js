@@ -13,6 +13,9 @@ class ThToolbarController {
 	openMenu() {
 		this.$mdSidenav('th-sidenav-id').toggle();
 	}
+	get buttons() { 
+		return this.$state.current.data?.buttons || undefined; 
+	}
 };
 
 export const thToolbarName = 'thToolbar';

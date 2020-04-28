@@ -5,6 +5,7 @@ export const thZonesComponent = {
 	controller: ThZonesComponentController,
 	bindings: {
 		activeZones: '<',
-		settingsThermostat: '<'
+		thermostat: '<',
+		settingsModes: '<'
 	}
 };

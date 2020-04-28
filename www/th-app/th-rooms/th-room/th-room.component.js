@@ -21,7 +21,7 @@ class ThRoomController {
 			.ok('Delete')
 			.cancel('Cancel');
 		const http = this.$http;
-		const id=this.room.id;
+		const id=this.room._id;
 		const $state= this.$state;
 		this.$mdDialog
 			.show(dialog)

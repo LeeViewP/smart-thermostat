@@ -2,8 +2,8 @@
 	<md-card-title>
 		<md-card-title-text>
 			<div class="md-headline" layout="row">
-				
-					<md-icon flex="10" md-svg-icon="scheduled" layut="row" class="md-primary"></md-icon>
+
+				<md-icon flex="10" md-svg-icon="schedules" layut="row" class="md-primary"></md-icon>
 				<span flex md-truncate>{{::$ctrl.name}}</span>
 			</div>
 		</md-card-title-text>
@@ -11,13 +11,37 @@
 	<md-card-content>
 		<div class="md-body-2" layout="row">
 			<div flex layout="column" md-truncate>
-				<md-tabs md-dynamic-height md-border-bottom >
+				<section data-ng-repeat="(day, schedule) in $ctrl.schedules track by day" layout="column">
+					<section layout="row" layout-align="start center">
+						<section flex="15">{{::$ctrl.getDayOfWeek(day)}}</section>
+						<section flex layout="row">
+							<section data-ng-repeat="time in schedule track by $index" data-time="time" layout="row"
+								layout-padding>
+								<section layout="column" layout-align="center center" class="md-whiteframe-1dp">
+									<section layout="row" layout-align="center center">
+										<md-icon md-svg-icon="scheduled" class="s20"></md-icon>
+										<section>{{time.start | thMinutesToHumanisedString}}</section>
+									</section>
+									<section layout="row" layout-align="center center">
+										<md-icon md-svg-icon="temperature" class="s20"></md-icon>
+										<section>{{time.temperature| number:2}}</section>
+									</section>
+
+								</section>
+							</section>
+
+						</section>
+					</section>
+					<md-divider></md-divider>
+				</section>
+
+				<!-- <md-tabs md-dynamic-height md-border-bottom md-colors="{'background': 'default-primary-50'}"  md-colors="{'background': 'default-accent'}" >
 					<md-tab label={{::$ctrl.getDayOfWeek(day)}} data-ng-repeat="(day, schedule) in $ctrl.schedules track by day">
-						<section flex data-ng-repeat="time in schedule track by $index" data-time="time" layout-padding>
+						<section flex data-ng-repeat="time in schedule track by $index" data-time="time" layout="row">
 							<section>from {{time.start | thMinutesToHumanisedString}} temperature is set to: {{time.temperature}}</section>
 						</section>
 					</md-tab>
-				</md-tabs>
+				</md-tabs> -->
 				<!-- <section  flex data-ng-repeat="schedule in $ctrl.schedules track by $index" data-schedule="schedule" layout-padding>
 					<div>{{::$ctrl.getDayOfWeek($index)}}</div>
 					<section flex data-ng-repeat="time in schedule track by $index" data-time="time" layout-padding>
@@ -25,17 +49,17 @@
 					</section>
 					<div>{{schedule | json}}</div>
 				</section>-->
-			</div> 
+			</div>
 		</div>
 	</md-card-content>
 	<md-card-actions layout="row" layout-align-gt-xs="end center" layout-align="center center">
-		<!-- <md-button ui-sref="app.rooms.room({roomid: $ctrl.room.id, room: $ctrl.room})">
+		<md-button ui-sref="app.schedules.schedule({scheduleID: $ctrl.schedule._id, schedule: $ctrl.schedule})">
 			edit
-		</md-button> -->
+		</md-button>
 		<md-button data-ng-click="$ctrl.delete()">
 			delete
 		</md-button>
 
-		
+
 	</md-card-actions>
 </md-card>

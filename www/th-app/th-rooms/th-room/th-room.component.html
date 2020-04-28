@@ -11,37 +11,42 @@
 			</div>
 		</md-card-title-text>
 	</md-card-title>
-	<md-card-content>
-		<div class="md-body-2" layout="row">
-			<div flex="10" layout="column">
-				<md-icon md-svg-icon="temperature" layut="row" class="md-primary"></md-icon>
-			</div>
-			<div flex="90" layout="column" md-truncate>
-				<section flex data-ng-repeat="sensor in $ctrl.room.sensors track by sensor._id" data-sensor="sensor"layout-padding>
+	<md-card-content layout-padding>
+		<div class="md-body-2" layout="column" layout-padding>
+			<section flex layout="row" data-ng-repeat="sensor in $ctrl.room.sensors track by sensor._id"
+				data-sensor="sensor">
+				<div flex="10">
+					<md-icon md-svg-icon="temperature" class="md-primary"></md-icon>
+				</div>
+				<div flex="90" md-truncate>
 					{{sensor._id}}
-				</section>
-				<!-- {{::$ctrl.room.sensor._id}} -->
-			</div>
+				</div>
+			</section>
+			<md-divider data-ng-if="$ctrl.room.sensors.length > 0"></md-divider>
 		</div>
-		<div class="md-body-2" layout="row">
-			<div flex="10" layout="column">
-				<md-icon md-svg-icon="switch" layut="row" class="md-primary"></md-icon>
-			</div>
-			<div flex="90" layout="column" md-truncate>
-				<section flex data-ng-repeat="relay in $ctrl.room.relays track by relay._id" data-relay="relay"	layout-padding>
+		<div class="md-body-2" layout="column" layout-padding>
+			<section flex layout="row" data-ng-repeat="relay in $ctrl.room.relays track by relay._id"
+				data-relay="relay">
+				<div flex="10" layout="column">
+					<md-icon md-svg-icon="switch" layut="row" class="md-primary"></md-icon>
+				</div>
+				<div flex="90" layout="column" md-truncate>
 					{{relay._id}}
-				</section>
-			</div>
+				</div>
+			</section>
+			<md-divider data-ng-if="$ctrl.room.relays.length>0"></md-divider>
 		</div>
+
 	</md-card-content>
+
 	<md-card-actions layout="row" layout-align-gt-xs="end center" layout-align="center center">
-		<md-button ui-sref="app.rooms.room({roomid: $ctrl.room.id, room: $ctrl.room})">
+		<md-button ui-sref="app.rooms.room({roomid: $ctrl.room._id, room: $ctrl.room})">
 			edit
 		</md-button>
 		<md-button data-ng-click="$ctrl.delete()">
 			delete
 		</md-button>
 
-		
+
 	</md-card-actions>
 </md-card>

@@ -1,8 +1,9 @@
 <md-content>
-	<section data-ng-if="$ctrl.activeSchedules.length > 0" layout="column" layout-gt-md = "row">
-		<th-schedule flex data-ng-repeat="activeSchedule in $ctrl.activeSchedules track by activeSchedule._id" data-schedule="activeSchedule" layout-padding></th-schedule>
-	  </section>
-	  <section data-ng-if="$ctrl.activeSchedules.length < 1">
-		<h2 class="md-flex"  flex layout="row" layout-align="center center">There is no schedule defined!</h2>
-	  </section>
+	<section data-ng-if="$ctrl.activeSchedules.length > 0" layout="column" layout-gt-md="row">
+		<th-schedule flex data-ng-repeat="activeSchedule in $ctrl.activeSchedules track by activeSchedule._id"
+			data-schedule="activeSchedule" layout-padding></th-schedule>
+	</section>
+	<section data-ng-if="$ctrl.activeSchedules.length < 1">
+		<h2 class="md-flex" flex layout="row" layout-align="center center">There is no schedule defined!</h2>
+	</section>
 </md-content>
