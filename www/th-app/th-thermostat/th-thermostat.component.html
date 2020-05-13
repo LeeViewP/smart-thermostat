@@ -1,20 +1,19 @@
 <md-content>
-	<h2>I am the bloody Thermostat State TEMPLATE! Piss off!</h2>
 	<!-- <pre>{{$ctrl.activeThermostat.mode}}</pre> -->
 	<!-- <pre>{{$ctrl.activeThermostat}}</pre> -->
 	<!-- <input type="number" ng-model="$ctrl.search.mode" > -->
 	<md-subheader class="no-padding">
 		<th-thermostat-modes data-thermostat="$ctrl.thermostat" , data-modes="$ctrl.settingsModes" data-search="$ctrl.search"></th-thermostat-modes>
-
-		
 		<md-divider></md-divider>
 	</md-subheader>
-	<section data-ng-if="$ctrl.thermostat.controlzones.length > 0" layout="column">
-		<section flex
+	<section data-ng-if="$ctrl.thermostat.controlzones.length > 0" layout="column" layout-gt-md = "row">
+		<th-control-zone flex data-ng-repeat="controlZone in $ctrl.thermostat.controlzones  | filter:$ctrl.search:true as results track by controlZone.id"
+		data-zone="controlZone" layout-padding></th-control-zone>
+		<!-- <section flex
 			data-ng-repeat="controlZone in $ctrl.thermostat.controlzones  | filter:$ctrl.search:true as results track by controlZone.id"
 			data-sensor="controlZone" layout-padding>
 			<pre>{{controlZone}}</pre>
-		</section>
+		</section> -->
 	</section>
 	<section data-ng-if="$ctrl.thermostat.controlzones.length < 1">
 		<h2 class="md-flex" flex layout="row" layout-align="center center">No thermostat control found!</h2>

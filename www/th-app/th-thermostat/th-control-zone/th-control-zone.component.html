@@ -1,0 +1,46 @@
+<!-- <pre>{{$ctrl.zone}}</pre> -->
+<md-card md-whiteframe="3" layout-margin>
+	<!-- <md-card-title>	
+		<md-card-title-text>
+			<div class="md-headline" layout="row">
+				 <md-icon flex="10" class="md-primary" md-svg-icon="{{$ctrl.modeIcon[$ctrl.mode]}}"></md-icon>  
+				<span flex md-truncate>{{::$ctrl.zone.id}}</span>
+			</div>
+
+		</md-card-title-text>
+	</md-card-title> -->
+	<md-card-content>
+        <div class="md-caption" layout="row" layout-align="start center">
+            <md-icon flex="10" class="md-primary" md-svg-icon="rooms"></md-icon>
+            <span flex md-truncate>{{::$ctrl.zone.zoneid}}</span>
+        </div>
+        <div class="md-caption" layout="row" layout-align="start center">
+            <md-icon flex="10" class="md-primary" md-svg-icon="scheduled"></md-icon>
+            <span flex md-truncate>{{::$ctrl.zone.schedule}}</span>
+        </div>
+        <div class="md-subhead" layout="row" layout-align="start center">
+            <md-icon flex="10" class="md-primary" md-svg-icon=""></md-icon>
+            <span flex md-truncate>Offsets</span>
+        </div>
+        <md-divider></md-divider>
+        <div class="md-caption" layout="row" layout-align="start center">
+            <md-icon flex="10" class="md-primary" md-svg-icon="temperature"></md-icon>
+            <span flex md-truncate>{{::$ctrl.zone.offset.temperature}}</span>
+        </div>
+        <div class="md-caption" layout="row" layout-align="start center">
+            <md-icon flex="10" class="md-primary" md-svg-icon="humidity"></md-icon>
+            <span flex md-truncate>{{::$ctrl.zone.offset.humidity}}</span>
+        </div>
+    </md-card-content>
+    <md-card-actions layout="row" layout-align-gt-xs="end center" layout-align="end center">
+        <md-button data-ng-click="$ctrl.disable()">
+			disable
+		</md-button>
+        <md-button ui-sref="app.rooms.room({roomid: $ctrl.room._id, room: $ctrl.room})">
+			edit
+		</md-button>
+		<md-button data-ng-click="$ctrl.delete()">
+			delete
+		</md-button>
+    </md-card-actions>
+    </md-card>

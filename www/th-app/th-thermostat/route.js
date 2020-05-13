@@ -6,7 +6,13 @@ export const thThermostatRoutesConfig = ['$stateProvider', function ($stateProvi
 		data: {
 			name: 'Thermostat',
 			icon: 'thermostat',
-			menuPosition: 110
+			menuPosition: 110,
+			buttons:[
+				{
+					name:"Add",
+					sref:"app.Thermostat.controlzones.controlzone({controlzoneid:'new', controlzone: {name:'', _ip:''}})" 
+				}
+			]
 		},
 		bindings: {
 			thermostat: 'thermostat',

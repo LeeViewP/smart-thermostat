@@ -10,9 +10,16 @@ export const thSwitchesRoutesConfig = ['$stateProvider', function ($stateProvide
 			buttons:[
 				{
 					name:"Add",
-					sref:"app.switches.switch({switchid:'new', switch: {name:'', _ip:''}})" 
+					// sref:"app.switches.switch({switchid:'new', switch: {name:'', _ip:''}})" 
 				}
 			]
+		},
+		bindings: {
+			relays: 'relays'
+		},
+		resolve: {
+			relays: ['$http', ($http) => $http.get('/relays').then(r =>r.data)],
+			// settingsThermostat: ['$http', ($http) => $http.get('settings/thermostat').then(result => result.data)]
 		}
 	});
 }];
